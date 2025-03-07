@@ -78,12 +78,17 @@ class Jogo:
             "pergunta": f"Quanto é {n1} {operador} {n2}?",
             "resposta": str(resposta_correta),
         }
-        self.tempo_inicio = time.time()
+        self.tempo_inicio = time.time()  # Registra o início do tempo para a nova pergunta
 
     def verificar_resposta(self, resposta: str) -> bool:
         """
         Verifica se a resposta está correta, atualizando a pontuação e o estado do jogo.
         """
+        # Verifica se o tempo para a pergunta já acabou
+        if self.calcular_tempo_restante() <= 0:
+            self.fim_de_jogo = True
+            return False
+
         if resposta == self.pergunta_atual["resposta"]:
             self.pontuacao += 10
             self.perguntas_respondidas += 1
@@ -93,6 +98,18 @@ class Jogo:
             self.pontuacao -= 5
             self.verificar_fim_de_jogo()
             return False
+
+    def calcular_tempo_restante(self) -> int:
+        """
+        Calcula o tempo restante (em segundos) com base no tempo de início e o tempo limite.
+        Retorna 0 se o tempo acabou.
+        """
+        limite_tempo = 30  # Tempo limite de 30 segundos por pergunta
+        if not self.tempo_inicio:
+            return limite_tempo  # Se ainda não foi iniciado, retorna o tempo total
+
+        tempo_passado = time.time() - self.tempo_inicio
+        return max(0, int(limite_tempo - tempo_passado))
 
     def atualizar_nivel(self):
         """
@@ -177,6 +194,12 @@ def jogar():
     if jogo.fim_de_jogo:
         return redirect(url_for("fim"))
 
+    # Verificar tempo restante antes de gerar nova pergunta
+    tempo_restante = jogo.calcular_tempo_restante()
+    if tempo_restante <= 0:
+        jogo.fim_de_jogo = True
+        return redirect(url_for("fim"))
+
     jogo.gerar_pergunta()
 
     # Geração de opções múltiplas e embaralhamento
@@ -195,6 +218,7 @@ def jogar():
         nivel=jogo.nivel,
         pontuacao=jogo.pontuacao,
         power_ups=jogo.power_ups,
+        tempo_restante=tempo_restante  # Envia o tempo restante para o HTML
     )
 
 
@@ -254,6 +278,15 @@ def ver_ranking():
 @app.route("/regras")
 def regras():
     return render_template("regras.html")
+
+
+@app.route("/reiniciar", methods=["POST"])
+def reiniciar():
+    """
+    Reinicia o estado do jogo.
+    """
+    jogo.reiniciar()  # Chama o método para reiniciar o jogo
+    return {"mensagem": "Jogo reiniciado com sucesso!"}, 200  # Retorna uma resposta JSON ao frontend
 
 
 # ------------------------------

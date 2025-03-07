@@ -60,6 +60,38 @@ p {
     line-height: 1.6;
 }
 
+/* Contador de Tempo */
+.contador-tempo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 15px 0;
+    color: #00FFAB; /* Cor verde inicial */
+    transition: color 0.3s ease-in-out;
+}
+
+.contador-tempo.alerta {
+    color: #FFD700; /* Amarelo ao aproximar do fim */
+    animation: pulse 1s infinite; /* Efeito de pulso para chamar a atenção */
+}
+
+.contador-tempo.esgotado {
+    color: #FF6363; /* Vermelho ao se esgotar */
+    animation: none; /* Remove animação quando tempo encerra */
+}
+
+/* Efeito de pulso */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 /* Listas */
 ul, ol {
     padding: 0;
@@ -88,15 +120,15 @@ li:hover {
 .botao-container {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Quebra de linha quando necessário */
+    gap: 10px; /* Espaço entre os botões */
+    margin-top: 10px;
 }
 
 .botao, form button {
     display: inline-block;
-    padding: 12px 25px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.95rem; /* Tamanho da fonte ajustado */
     font-weight: bold;
     text-transform: uppercase;
     text-decoration: none;
@@ -107,14 +139,15 @@ li:hover {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     border: none;
+    min-width: 120px; /* Garante uma largura mínima para os botões */
 }
 
 .botao:hover, form button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    transform: scale(1.08); /* Animação de hover */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
 }
 
-/* Botões desabilitados (ex.: Power-Ups sem uso disponível) */
+/* Botões desabilitados */
 .botao:disabled, form button:disabled {
     background: grey;
     color: white;
@@ -177,7 +210,7 @@ form input:focus {
     display: none !important;
 }
 
-/* Animações para mensagens */
+/* Animações */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -195,7 +228,7 @@ form input:focus {
     75% { transform: translateX(5px); }
 }
 
-/* Responsividade adicional */
+/* Responsividade */
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;
@@ -204,10 +237,15 @@ form input:focus {
     p, li, form input, form button, .botao {
         font-size: 1rem;
         padding: 10px;
+        min-width: 100px; /* Ajusta largura em dispositivos médios */
     }
 
     .container {
         padding: 20px;
+    }
+
+    .botao-container {
+        gap: 8px;
     }
 }
 
@@ -217,7 +255,12 @@ form input:focus {
     }
 
     .botao, form button {
-        padding: 8px 15px;
-        font-size: 0.9rem;
+        padding: 6px 10px; /* Mais compacto ainda */
+        font-size: 0.85rem;
+        min-width: 80px; /* Ajusta para dispositivos menores */
+    }
+
+    .botao-container {
+        gap: 5px; /* Espaço reduzido */
     }
 }

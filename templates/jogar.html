@@ -38,6 +38,13 @@
             text-shadow: 0 0 10px #FFD700, 0 0 20px #fff;
         }
 
+        .contador-tempo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #ff4d4d;
+        }
+
         .pergunta {
             font-size: 1.5rem;
             margin: 20px 0;
@@ -56,9 +63,16 @@
             color: #FFD700;
         }
 
+        .botoes-respostas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
         .botao-resposta {
-            display: block;
-            margin: 15px auto;
+            flex: 0 1 calc(45% - 10px); /* Cada botão ocupa 45% do espaço na linha */
             padding: 15px 20px;
             text-transform: uppercase;
             border: none;
@@ -159,6 +173,9 @@
         <!-- Título -->
         <h1>🎯 Responda a Pergunta!</h1>
 
+        <!-- Contador de tempo -->
+        <div id="contador-tempo" class="contador-tempo">Tempo restante: {{ tempo_restante }}s</div>
+
         <!-- Mensagem de erro ou sucesso -->
         {% if erro %}
         <div class="mensagem erro">
@@ -180,7 +197,7 @@
         </div>
 
         <!-- Formulário com as opções de resposta -->
-        <form action="{{ url_for('responder') }}" method="post">
+        <form action="{{ url_for('responder') }}" method="post" class="botoes-respostas">
             {% for opcao in opcoes %}
             <button
                 type="submit"
@@ -196,48 +213,46 @@
         <!-- Power-Ups -->
         <div class="power-ups">
             <h2>💡 Power-Ups</h2>
-            <!-- Power-Up: Eliminar Respostas -->
             <form action="{{ url_for('power_up', tipo='eliminar') }}" method="post">
-                {% if power_ups.eliminar > 0 %}
                 <button type="submit" class="botao">
                     ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
                 </button>
-                {% else %}
-                <button type="submit" class="botao" disabled>
-                    ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
-                </button>
-                {% endif %}
             </form>
-
-            <!-- Power-Up: Mais Tempo -->
             <form action="{{ url_for('power_up', tipo='tempo_extra') }}" method="post">
-                {% if power_ups.tempo_extra > 0 %}
                 <button type="submit" class="botao">
                     ⏳ Mais Tempo <br> ({{ power_ups.tempo_extra }} restantes)
                 </button>
-                {% else %}
-                <button type="submit" class="botao" disabled>
-                    ⏳ Mais Tempo <br> ({{ power_ups.tempo_extra }} restantes)
-                </button>
-                {% endif %}
             </form>
-
-            <!-- Power-Up: Resposta Certa -->
             <form action="{{ url_for('power_up', tipo='resposta_certa') }}" method="post">
-                {% if power_ups.resposta_certa > 0 %}
                 <button type="submit" class="botao">
                     ✔️ Resposta Certa <br> ({{ power_ups.resposta_certa }} restantes)
                 </button>
-                {% else %}
-                <button type="submit" class="botao" disabled>
-                    ✔️ Resposta Certa <br> ({{ power_ups.resposta_certa }} restantes)
-                </button>
-                {% endif %}
             </form>
         </div>
 
         <!-- Botão de voltar -->
         <a href="{{ url_for('index') }}" class="botao-voltar">Voltar ao início</a>
     </div>
+
+    <!-- Script para o contador de tempo -->
+    <script>
+        let tempoRestante = {{ tempo_restante }}; // Tempo restante vindo do backend
+        const contadorElemento = document.getElementById('contador-tempo');
+
+        function atualizarContador() {
+            if (tempoRestante > 0) {
+                contadorElemento.textContent = `Tempo restante: ${tempoRestante}s`;
+                tempoRestante--;
+            } else {
+                contadorElemento.textContent = "Tempo esgotado!";
+                clearInterval(intervaloContador);
+
+                // Redireciona automaticamente para a tela de fim
+                window.location.href = "{{ url_for('fim') }}";
+            }
+        }
+
+        const intervaloContador = setInterval(atualizarContador, 1000);
+    </script>
 </body>
 </html>
