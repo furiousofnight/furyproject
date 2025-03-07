@@ -34,7 +34,7 @@
         {% for tipo, quantidade in status.power_ups.items() %}
         <button type="submit" name="tipo" value="{{ tipo }}"
                 class="powerup-btn btn btn-outline-success w-25 mx-1"
-                {{ 'disabled' if quantidade == 0 else '' }}>
+                {% id quantidade == 0 %}disabled{% endif %}>
             {{ tipo.replace('_', ' ').capitalize() }} ({{ quantidade }})
         </button>
         {% endfor %}

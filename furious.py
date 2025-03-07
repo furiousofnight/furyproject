@@ -11,7 +11,7 @@ class Jogo:
         self.nivel_atual = 1
         self.questoes_corretas = 0
         self.power_ups = {"mais_tempo": 1, "mais_pontos": 1, "pular_questao": 1}
-        self.popup_ativo = False  # NOVA FLAG: para controlar exibição de mensagens
+        self.popup_ativo = False  # NOVA ‘FLAG’: para controlar exibição de mensagens
 
     def fim_do_jogo(self):
         """Exibe a mensagem de fim do jogo e a pontuação final."""
@@ -121,7 +121,7 @@ def obter_escolha_usuario(qtd_opcoes, mensagem="Escolha: "):
 
 
 def main() -> None:
-    """Loop principal do jogo."""
+    """‘Loop’ principal do jogo."""
     jogo = Jogo("facil", 40)
     print("\n🎉 Bem-vindo ao Jogo Matemático! 🎉\n")
 
@@ -152,7 +152,7 @@ def main() -> None:
             power_up = input("Escolha o power-up: mais_tempo, mais_pontos ou pular_questao: ").strip()
             if power_up in ["mais_tempo", "mais_pontos", "pular_questao"]:
                 if jogo.usar_power_up(power_up):
-                    continue  # Se pulou a questão, volta ao início do loop
+                    continue  # Se pulou a questão, volta ao início do ‘loop’
             else:
                 print("⚠ Power-up inválido! Tente um válido.")
         elif respostas[escolha - 1] == resposta_correta:
