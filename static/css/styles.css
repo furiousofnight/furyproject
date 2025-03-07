@@ -4,7 +4,7 @@ body {
     font-size: 16px;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #1a1a2e, #0f3469);
+    background: linear-gradient(to bottom, #1a1a2e, #16213e);
     color: #f5f5f5;
     line-height: 1.6;
     display: flex;
@@ -15,44 +15,38 @@ body {
 header.main-header {
     background-color: #0f3469;
     color: white;
-    padding: 1.2rem 2rem;
+    padding: 1rem 2rem;
     text-align: center;
-    border-bottom: 3px solid #e94560;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid #e94560;
 }
 
 header .navbar a {
     text-decoration: none;
     color: white;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-header .navbar a:hover {
-    color: #e94560;
-    transition: color 0.3s ease-in-out;
+    display: block;
 }
 
 /* Conteúdo Principal */
 main {
     flex: 1;
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 15px;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Mensagens Flash */
 .flash-messages {
     background-color: #f48b29;
-    color: #1a1a2e;
+    color: black;
     padding: 1rem;
     margin-bottom: 1.5rem;
-    border: 2px solid #e94560;
-    border-radius: 10px;
+    border: 1px solid #e94560;
+    border-radius: 8px;
     text-align: center;
     font-weight: bold;
     animation: fadein 0.5s ease-in;
@@ -68,46 +62,37 @@ main {
 }
 
 /* Estilos do Jogo */
-.game-container {
-    text-align: center;
-}
-
 .game-container .info {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-bottom: 1rem;
     text-align: center;
-    color: #dcdcdc;
 }
 
 .game-container .question {
-    font-size: 2.2rem;
-    margin: 1.5rem 0;
+    font-size: 2rem;
+    margin: 1rem 0;
     text-align: center;
-    color: #e8e8e8;
-    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.3);
-    padding: 0.8rem;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.2);
+    color: #f5f5f5;
 }
 
 .answers {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 }
 
 .answer-btn {
-    padding: 12px 20px; /* Diminuído */
+    padding: 12px 20px;
     background: #16213e;
     color: #f5f5f5;
     border: 2px solid #e94560;
     border-radius: 10px;
-    font-size: 1rem; /* Diminuído */
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.3s, background 0.3s ease-in-out, color 0.3s ease-in-out;
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s, background 0.3s;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .answer-btn:hover {
@@ -116,125 +101,98 @@ main {
     color: white;
 }
 
-/* Power-Ups */
 .powerups-container {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-around;
     margin: 2rem 0;
 }
 
 .powerup-btn {
-    padding: 15px 25px; /* Diminuído */
+    padding: 10px 15px;
     background: #0f3469;
     color: white;
-    border: 2px solid #e94560; /* Mais fino */
-    border-radius: 10px; /* Mais arredondadas */
-    font-size: 1.2rem; /* Diminuído */
+    border: 3px solid #e94560;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    min-width: 120px; /* Largura mínima menor */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .powerup-btn:hover {
-    transform: scale(1.1); /* Efeito hover sutil */
+    transform: scale(1.1);
     background: #16213e;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Fim do Jogo */
+/* Mensagens de Fim do Jogo */
 .game-over-container {
     text-align: center;
     margin-top: 3rem;
-    padding: 2rem 1rem;
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
 .game-over-title {
-    font-size: 2.2rem; /* Reduzido */
+    font-size: 2.2rem;
     color: #e94560;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8);
 }
 
 .game-summary p {
-    font-size: 1.3rem; /* Reduzido */
+    font-size: 1.4rem;
     margin: 10px 0;
-    color: #eeeeee;
+    color: white;
 }
 
 .play-again-btn {
     display: inline-block;
     margin-top: 20px;
-    padding: 12px 25px; /* Ajustado */
+    padding: 12px 25px;
     background: #e94560;
     color: white;
     text-decoration: none;
-    font-size: 1.1rem; /* Reduzido */
+    font-size: 1rem;
     font-weight: bold;
     border-radius: 12px;
-    transition: background 0.3s, transform 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: background 0.3s, scale 0.3s;
 }
 
 .play-again-btn:hover {
-    background: #1a1a2e;
+    background: #16213e;
     color: #e94560;
     transform: scale(1.05);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Rodapé */
 footer.main-footer {
     text-align: center;
-    padding: 1.8rem; /* Ligeiramente menor */
+    padding: 1.5rem;
     background: #0f3469;
     color: #b1b1b1;
-    border-top: 3px solid #e94560;
-    font-size: 0.9rem; /* Reduzido */
+    border-top: 2px solid #e94560;
+    font-size: 1rem;
 }
 
 footer a {
     color: #e94560;
     text-decoration: none;
-    transition: color 0.3s ease-in-out;
 }
 
 footer a:hover {
     text-decoration: underline;
-    color: white;
 }
 
-/* Responsividade */
+/* Efeitos Responsivos */
 @media (max-width: 768px) {
     header .navbar a {
-        font-size: 1.4rem; /* Ajustado para telas menores */
-    }
-
-    .game-container .info {
-        font-size: 1rem; /* Reduzido */
+        font-size: 1.5rem;
     }
 
     .answers {
-        grid-template-columns: 1fr; /* Respostas em coluna no celular */
+        grid-template-columns: 1fr;
     }
 
-    .powerup-btn {
-        padding: 12px; /* Reduz tamanho nos celulares */
-        font-size: 1rem; /* Texto menor */
-    }
-
-    .play-again-btn {
-        padding: 10px 20px; /* Mais compacto */
-        font-size: 1rem; /* Ajustado */
-    }
-
-    .game-over-title {
-        font-size: 1.8rem; /* Compactado */
+    .info {
+        font-size: 1rem;
     }
 }

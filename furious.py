@@ -11,7 +11,6 @@ class Jogo:
         self.nivel_atual = 1
         self.questoes_corretas = 0
         self.power_ups = {"mais_tempo": 1, "mais_pontos": 1, "pular_questao": 1}
-        self.popup_ativo = False  # NOVA ‘FLAG’: para controlar exibição de mensagens
 
     def fim_do_jogo(self):
         """Exibe a mensagem de fim do jogo e a pontuação final."""
@@ -36,26 +35,19 @@ class Jogo:
         operacao = random.choice(["+", "-", "*", "/"])
 
         questao = f"Quanto é {num1} {operacao} {num2}?"
-
-        # Resolvendo a operação explicitamente para evitar o uso de eval
-        if operacao == "+":
-            resposta_correta = num1 + num2
-        elif operacao == "-":
-            resposta_correta = num1 - num2
-        elif operacao == "*":
-            resposta_correta = num1 * num2
-        else:  # operação == "/"
-            while num2 == 0:  # Certificar que não haverá divisão por zero
-                num2 = random.randint(1, 10 * self.nivel_dificuldade)
-            resposta_correta = round(num1 / num2, 2)
-
-        self.resposta_correta = resposta_correta
+        try:
+            resposta_correta = eval(f"{num1} {operacao} {num2}")
+            if operacao == "/":
+                resposta_correta = round(resposta_correta, 2)
+            self.resposta_correta = resposta_correta
+        except ZeroDivisionError:
+            return self.gerar_questao()  # Evita divisão por zero
 
         # Gera respostas únicas
         respostas_erradas = set()
         while len(respostas_erradas) < 3:
             resposta_errada = round(random.uniform(1, 10 * self.nivel_dificuldade), 2)
-            if resposta_errada != self.resposta_correta:  # Evita duplicatas
+            if resposta_errada != self.resposta_correta:
                 respostas_erradas.add(resposta_errada)
 
         # Combina a resposta correta com erradas
@@ -79,7 +71,7 @@ class Jogo:
         if self.questoes_corretas >= 5 and self.pontuacao >= pontos_para_evoluir:
             self.nivel_atual += 1
             self.questoes_corretas = 0
-            self.tempo_limite = max(5, self.tempo_limite - 5)  # Garante que o tempo não seja menor que 5
+            self.tempo_limite -= 5  # Reduz o tempo como desafio
             print("\n🔥 Você avançou para o NÍVEL", self.nivel_atual)
 
     def usar_power_up(self, tipo):
@@ -99,13 +91,6 @@ class Jogo:
             print("❌ Power-up indisponível!")
         return False
 
-    def exibir_popup(self, mensagem):
-        """Exibe um popup simulando resposta correta ou incorreta."""
-        self.popup_ativo = True  # Ativa o estado de bloqueio
-        print(f"\n📢 {mensagem}")
-        time.sleep(2)  # Exibe o popup por 2 segundos
-        self.popup_ativo = False  # Desativa o estado de bloqueio
-
 
 def obter_escolha_usuario(qtd_opcoes, mensagem="Escolha: "):
     """Obtém a entrada do utilizador e valida-a."""
@@ -121,7 +106,7 @@ def obter_escolha_usuario(qtd_opcoes, mensagem="Escolha: "):
 
 
 def main() -> None:
-    """‘Loop’ principal do jogo."""
+    """Loop principal do jogo."""
     jogo = Jogo("facil", 40)
     print("\n🎉 Bem-vindo ao Jogo Matemático! 🎉\n")
 
@@ -129,13 +114,10 @@ def main() -> None:
 
     while True:
         tempo_restante = jogo.tempo_limite - (time.time() - inicio)
-        if tempo_restante <= 0:  # Verifica se o tempo acabou
+        if tempo_restante <= 0:
             print("\n⏰ Tempo esgotado!")
             jogo.fim_do_jogo()
             break
-
-        if jogo.popup_ativo:  # Verifica se o popup está ativo
-            continue  # Bloqueia novas entradas até que o popup desapareça
 
         jogo.imprimir_status(tempo_restante)
 
@@ -152,14 +134,14 @@ def main() -> None:
             power_up = input("Escolha o power-up: mais_tempo, mais_pontos ou pular_questao: ").strip()
             if power_up in ["mais_tempo", "mais_pontos", "pular_questao"]:
                 if jogo.usar_power_up(power_up):
-                    continue  # Se pulou a questão, volta ao início do ‘loop’
+                    continue  # Se pulou a questão, volta ao início do loop
             else:
                 print("⚠ Power-up inválido! Tente um válido.")
-        elif respostas[escolha - 1] == resposta_correta:
-            jogo.exibir_popup("✅ Resposta correta!")
+        elif isinstance(respostas[escolha - 1], (int, float)) and respostas[escolha - 1] == resposta_correta:
+            print("✅ Resposta correta!")
             jogo.atualizar_pontuacao(True)
         else:
-            jogo.exibir_popup(f"❌ Resposta incorreta! A resposta correta era {resposta_correta}")
+            print(f"❌ Resposta incorreta! A resposta correta era {resposta_correta}")
             jogo.atualizar_pontuacao(False)
 
         jogo.verificar_nivel()

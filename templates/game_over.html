@@ -3,18 +3,13 @@
 {% block title %}Fim do Jogo{% endblock %}
 
 {% block content %}
-<div class="game-over-container bg-light text-center py-5 px-3 rounded">
-    <!-- Título do Fim do Jogo -->
-    <h2 class="game-over-title text-danger fw-bold mb-4">🎮 Fim do Jogo!</h2>
-
-    <!-- Resumo do Jogo -->
-    <div class="game-summary text-secondary fs-5 mb-4">
-        <p class="mb-2">🏆 <span class="fw-bold">Pontuação final:</span> <span class="text-dark">{{ resultado.pontuacao }}</span></p>
-        <p class="mb-2">🔢 <span class="fw-bold">Nível alcançado:</span> <span class="text-dark">{{ resultado.nivel_atual }}</span></p>
-        <p class="mb-2">⏰ <span class="fw-bold">Tempo restante:</span> <span class="text-dark">{{ resultado.tempo_restante }}</span> segundos</p>
+<div class="game-over-container">
+    <h2 class="game-over-title">🎮 Fim do Jogo!</h2>
+    <div class="game-summary">
+        <p>🏆 Pontuação final: <strong>{{ resultado.pontuacao }}</strong></p>
+        <p>🔢 Nível alcançado: <strong>{{ resultado.nivel_atual }}</strong></p>
+        <p>⏰ Tempo restante: <strong>{{ resultado.tempo_restante }}</strong> segundos</p>
     </div>
-
-    <!-- Botão de Jogar Novamente -->
-    <a href="/" class="btn btn-primary btn-lg px-4 py-2 play-again-btn">🔁 Jogar Novamente</a>
+    <a href="/" class="play-again-btn">🔁 Jogar Novamente</a>
 </div>
 {% endblock %}

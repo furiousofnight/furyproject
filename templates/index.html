@@ -1,108 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Bem-vindo ao Jogo Matemático{% endblock %}
+{% block title %}Jogar{% endblock %}
 
 {% block content %}
+<div class="game-container">
+    <!-- Informações principais do jogo -->
+    <p class="info">⏰ Tempo restante: <span id="tempo-restante">{{ status.tempo_restante }}</span> segundos</p>
+    <p class="info">🔢 Pontuação: {{ status.pontuacao }} | 🏆 Nível: {{ status.nivel_atual }}</p>
 
-<!-- Seção Inicial do Jogo -->
-<div class="hero-section text-center py-5">
-    <h1 class="text-primary fw-bold display-4">🎮 Bem-vindo ao Jogo Matemático</h1>
-    <p class="fs-5 text-light mt-3">Pronto para desafiar sua mente e se divertir com matemática? Suba de nível enquanto responde perguntas e use Power-Ups para se superar!</p>
-    <div class="mt-4">
-        <a href="/jogar" class="btn btn-success btn-lg fw-bold shadow-lg px-5 py-3">Iniciar Jogo</a>
-    </div>
-</div>
+    <!-- Pergunta do jogo -->
+    <h2 class="question">{{ questao }}</h2>
 
-<!-- Como Jogar -->
-<div class="container mt-5">
-    <div class="row align-items-center py-5">
-        <div class="col-md-6 text-center">
-            <!-- Caminho Correto para o SVG -->
-            <img src="{{ url_for('static', filename='images/how_to_play.svg') }}" alt="Como Jogar"
-                 class="img-fluid" style="max-height: 250px;">
+    <!-- Respostas como botões -->
+    <form method="POST" action="/responder">
+        <div class="answers">
+            {% for resposta in respostas %}
+            <button class="answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
+            {% endfor %}
         </div>
-        <div class="col-md-6 text-light">
-            <h2 class="text-danger fw-bold">🧠 Como Jogar?</h2>
-            <p class="fs-5">Responda às perguntas matemáticas apresentadas na tela. A sua pontuação e nível aumentarão conforme você acerta!</p>
-            <ul class="fs-5">
-                <li><strong>Use Power-Ups:</strong> Dicas, saltos e mais tempo para superar os desafios.</li>
-                <li><strong>Fique de olho no relógio:</strong> O tempo é limitado, então pense rápido!</li>
-                <li><strong>Desafie os seus limites:</strong> Alcance a pontuação máxima e transforme-se no mestre da matemática!</li>
-            </ul>
+    </form>
+
+    <!-- Power-Ups -->
+    <h3>Power-Ups</h3>
+    <form method="POST" action="/power-up">
+        <div class="powerups-container">
+            <button class="powerup-btn" type="submit" name="tipo" value="mais_tempo">⏳ +10 segundos</button>
+            <button class="powerup-btn" type="submit" name="tipo" value="mais_pontos">🔢 +50 Pontos</button>
+            <button class="powerup-btn" type="submit" name="tipo" value="pular_questao">⏭️ Pular Questão</button>
         </div>
+    </form>
+
+    <!-- Mensagens de Feedback -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+        <p class="flash-message">{{ message }}</p>
+        {% endfor %}
     </div>
+    {% endif %}
+    {% endwith %}
 </div>
-
-<!-- Power-Ups -->
-<div class="powerups-section text-center py-5 bg-dark">
-    <div class="container">
-        <h2 class="text-warning fw-bold mb-4">💡 Power-Ups para te ajudar!</h2>
-        <p class="text-light fs-5">Reforce sua estratégia com ferramentas poderosas:</p>
-        <div class="row g-4 mt-4">
-            <div class="col-md-4">
-                <div class="powerup-card bg-light p-4 rounded shadow">
-                    <h3 class="text-success fw-bold">Dica</h3>
-                    <p>Receba uma pista para acertar a questão difícil.</p>
-                    <button class="btn btn-outline-success btn-sm" disabled>Exemplo: (3 disponíveis)</button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="powerup-card bg-light p-4 rounded shadow">
-                    <h3 class="text-info fw-bold">Pular Questão</h3>
-                    <p>Não sabe a resposta? Pule e não perca pontos!</p>
-                    <button class="btn btn-outline-info btn-sm" disabled>Exemplo: (2 disponíveis)</button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="powerup-card bg-light p-4 rounded shadow">
-                    <h3 class="text-danger fw-bold">Adicionar Tempo</h3>
-                    <p>Precisa de tempo extra? Use este Power-Up!</p>
-                    <button class="btn btn-outline-danger btn-sm" disabled>Exemplo: (1 disponível)</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Pontuações Recentes -->
-<div class="scores-section container my-5 text-center">
-    <h2 class="text-primary fw-bold">🏆 Pontuações Recentes</h2>
-    <p class="text-light fs-5">Aqui estão algumas das melhores pontuações da comunidade:</p>
-    <table class="table table-striped table-dark table-bordered mt-4">
-        <thead>
-            <tr>
-                <th>Jogador</th>
-                <th>Pontuação</th>
-                <th>Nível</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Maria</td>
-                <td>1500</td>
-                <td>12</td>
-            </tr>
-            <tr>
-                <td>José</td>
-                <td>1350</td>
-                <td>10</td>
-            </tr>
-            <tr>
-                <td>Ana</td>
-                <td>1200</td>
-                <td>9</td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="mt-4">
-        <a href="/ranking" class="btn btn-outline-light">Ver ranking completo</a>
-    </div>
-</div>
-
-<!-- Rodapé ou Chamada para Ação -->
-<div class="footer-cta text-center py-4 bg-secondary text-light">
-    <h3 class="fw-bold">🤔 Está preparado? Não deixe para depois!</h3>
-    <a href="/jogar" class="btn btn-primary btn-lg mt-3">Começar Agora!</a>
-</div>
-
 {% endblock %}
