@@ -1,44 +1,127 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - Jogo Fodástico</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Gradiente animado no plano de fundo */
+        body {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            background-size: 200% 200%;
+            animation: gradientMove 6s ease infinite;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
 
-{% block title %}Jogar{% endblock %}
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-{% block content %}
-<div class="game-container">
-    <!-- Informações principais do jogo -->
-    <p class="info">⏰ Tempo restante: <span id="tempo-restante">{{ status.tempo_restante }}</span> segundos</p>
-    <p class="info">🔢 Pontuação: {{ status.pontuacao }} | 🏆 Nível: {{ status.nivel_atual }}</p>
+        /* Ajustes para o contêiner principal */
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #00C9FF;
+            border-radius: 10px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+        }
 
-    <!-- Pergunta do jogo -->
-    <h2 class="question">{{ questao }}</h2>
+        /* Estilo do título */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00C9FF;
+            text-shadow: 0 0 10px #00FFFF, 0 0 20px #00C9FF;
+            animation: pulseText 2s infinite;
+        }
 
-    <!-- Respostas como botões -->
-    <form method="POST" action="/responder">
-        <div class="answers">
-            {% for resposta in respostas %}
-            <button class="answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
-            {% endfor %}
+        @keyframes pulseText {
+            0%, 100% { text-shadow: 0 0 10px #00FFFF, 0 0 20px #00C9FF; }
+            50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00C9FF; }
+        }
+
+        /* Ajustes para o parágrafo */
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* Estilo dos botões */
+        .botao-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #00C9FF, #92FE9D);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .botao:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .botao-principal {
+            background: linear-gradient(135deg, #7352FF, #E73C7E);
+        }
+
+        /* Responsividade - ajuste para telas menores */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .botao {
+                font-size: 1rem;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao Jogo Fodástico!</h1>
+        <p>💡 Está pronto para testar os seus conhecimentos e divertir-se? Suba os níveis, vença os desafios e mostre que você é o mestre das perguntas!</p>
+        <div class="botao-container">
+            <!-- Botão para Iniciar Jogo -->
+            <a href="{{ url_for('jogar') }}" class="botao botao-principal">Iniciar Jogo</a>
+            <!-- Botão para Ver as Regras -->
+            <a href="{{ url_for('regras') }}" class="botao">Ver Regras</a>
+            <!-- Botão para Consultar o Ranking -->
+            <a href="{{ url_for('ver_ranking') }}" class="botao">Ranking</a>
         </div>
-    </form>
-
-    <!-- Power-Ups -->
-    <h3>Power-Ups</h3>
-    <form method="POST" action="/power-up">
-        <div class="powerups-container">
-            <button class="powerup-btn" type="submit" name="tipo" value="mais_tempo">⏳ +10 segundos</button>
-            <button class="powerup-btn" type="submit" name="tipo" value="mais_pontos">🔢 +50 Pontos</button>
-            <button class="powerup-btn" type="submit" name="tipo" value="pular_questao">⏭️ Pular Questão</button>
-        </div>
-    </form>
-
-    <!-- Mensagens de Feedback -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="flash-messages">
-        {% for message in messages %}
-        <p class="flash-message">{{ message }}</p>
-        {% endfor %}
     </div>
-    {% endif %}
-    {% endwith %}
-</div>
-{% endblock %}
+</body>
+</html>

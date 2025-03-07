@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regras do Jogo</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Gradiente animado no plano de fundo */
+        body {
+            background: linear-gradient(135deg, #1f4037, #99f2c8);
+            background-size: 200% 200%;
+            animation: gradientMove 6s ease infinite;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Estilo do contêiner principal */
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 40px 30px;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Título */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFFFFF;
+        }
+
+        /* Lista de regras */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #00FFAB;
+            text-align: left;
+        }
+
+        ul li:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFF;
+            transition: all 0.3s ease;
+        }
+
+        /* Botão */
+        .botao-container {
+            margin-top: 20px;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #FFF;
+            background: linear-gradient(135deg, #FF7300, #FFD700);
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .botao:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            ul li {
+                font-size: 1rem;
+            }
+
+            .botao {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Título das regras -->
+        <h1>📜 Regras do Jogo 📜</h1>
+        <!-- Lista de regras -->
+        <ul>
+            <li>✔️ Você ganha 10 pontos por cada resposta correta.</li>
+            <li>❌ Respostas erradas subtraem 5 pontos!</li>
+            <li>⏳ Se demorar mais de 30 segundos, você perde pontos.</li>
+            <li>💡 Suba de nível após responder 5 perguntas corretamente e ganhe 1 nivel.</li>
+            <li>💥 O jogo termina no nível final com 1500 pontos = (Nível 30).</li>
+        </ul>
+        <!-- Botão de navegação -->
+        <div class="botao-container">
+            <a href="{{ url_for('index') }}" class="botao">Voltar ao Início</a>
+        </div>
+    </div>
+</body>
+</html>

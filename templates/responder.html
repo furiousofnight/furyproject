@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Gradiente animado no fundo */
+        body {
+            background: linear-gradient(135deg, #232526, #414345);
+            background-size: 200% 200%;
+            animation: gradientMove 6s ease infinite;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Estilo do contêiner */
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 40px 30px;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Estilo do título */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00FFAB, 0 0 20px #00FFAB;
+            color: {{ "#00FFAB" if correta else "#FF6363" }};
+            animation: pulseText 2s infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { text-shadow: 0 0 10px #FFF, 0 0 20px {{ "#00FFAB" if correta else "#FF6363" }}; }
+            50% { text-shadow: 0 0 20px #FFF, 0 0 30px {{ "#00FFAB" if correta else "#FF6363" }}; }
+        }
+
+        /* Ajustes do texto */
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        b {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        /* Botões */
+        .botao {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #FFF;
+            background: linear-gradient(135deg, #00FFAB, #007AFF);
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .botao:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .botao-principal {
+            background: linear-gradient(135deg, #FFD700, #FF6363);
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .botao {
+                font-size: 0.9rem;
+                padding: 12px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Exibição do resultado -->
+        <h1>{{ "✅ Resposta Correta!" if correta else "❌ Resposta Errada!" }}</h1>
+        <p>A resposta certa era: <b>{{resposta_certa }}</b></p>
+        <p>🌟 A sua pontuação atual é: <b>{{pontuacao}}</b></p>
+        <p>Nível Atual: <b>{{ nivel }}</b></p>
+
+        <!-- Botões de navegação -->
+        <div class="botao-container">
+            <a href="{{ url_for('jogar') }}" class="botao botao-principal">Próxima Pergunta</a>
+            <a href="{{ url_for('index') }}" class="botao">Voltar ao Início</a>
+        </div>
+    </div>
+</body>
+</html>

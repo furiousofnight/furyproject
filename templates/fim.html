@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fim do Jogo</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Fundo com gradiente animado */
+        body {
+            background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+            background-size: 200% 200%;
+            animation: gradientMove 6s ease infinite;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contêiner principal */
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 40px 30px;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Título */
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFFFFF;
+        }
+
+        /* Pontuação final */
+        .pontuacao {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .pontuacao b {
+            color: #00FFAB;
+        }
+
+        /* Mensagem final */
+        .mensagem-final {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #FFF;
+        }
+
+        /* Botões interativos */
+        .botao-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #FF6363, #FFD700);
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .botao:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Formulário do ranking */
+        .form-ranking {
+            margin-top: 20px;
+        }
+
+        .form-ranking input {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-ranking button {
+            display: block;
+            width: 100%;
+            margin: 0 auto;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3A1C71, #D76D77);
+            color: #FFF;
+            transition: background 0.3s ease;
+        }
+
+        .form-ranking button:hover {
+            background: linear-gradient(135deg, #D76D77, #FFAF7B);
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .pontuacao {
+                font-size: 1.2rem;
+            }
+
+            .mensagem-final {
+                font-size: 1rem;
+            }
+
+            .botao {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .form-ranking input, .form-ranking button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Título do fim do jogo -->
+        <h1>🎉 Fim do Jogo! 🎉</h1>
+
+        <!-- Pontuação final -->
+        <p class="pontuacao">
+            A sua pontuação final foi: <b>{{pontuacao }}</b> pontos!
+        </p>
+
+        <!-- Mensagem personalizada -->
+        <p class="mensagem-final">
+            Obrigado por jogar! Você chegou ao fim do jogo. Compartilhe a sua pontuação com os seus amigos e desafie-os a fazer ainda melhor!
+        </p>
+
+        <!-- Formulário para salvar a pontuação no ‘ranking’ -->
+        <form class="form-ranking" method="POST" action="{{ url_for('fim') }}">
+            <label for="nome">Insira seu nome para salvar no ‘ranking’:</label>
+            <input type="text" id="nome" name="nome" placeholder="Seu Nome" required>
+            <button type="submit">Salvar Pontuação</button>
+        </form>
+
+        <!-- Botões de navegação -->
+        <div class="botao-container">
+            <a href="{{ url_for('jogar') }}" class="botao">Jogar Novamente</a>
+            <a href="{{ url_for('index') }}" class="botao">Voltar ao Início</a>
+        </div>
+    </div>
+</body>
+</html>

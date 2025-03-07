@@ -1,45 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Gerencia o tempo restante no jogo
-    const iniciarContagemTempo = () => {
-        const tempoRestanteEl = document.getElementById("tempo-restante");
+  console.log("✨ Jogo iniciado! Preparando interface...");
 
-        if (tempoRestanteEl) {
-            let tempoAtual = parseInt(tempoRestanteEl.textContent, 10);
+  // Elementos da página a serem manipulados
+  const perguntaContainer = document.querySelector(".pergunta");
+  const respostaInput = document.querySelector("#resposta");
+  const enviarResposta = document.querySelector("#botao-resposta");
+  const statusContainer = document.querySelector(".status");
+  const mensagemContainer = document.querySelector(".mensagem");
 
-            const atualizarTempo = () => {
-                if (tempoAtual > 0) {
-                    tempoAtual--;
-                    tempoRestanteEl.textContent = tempoAtual;
-                } else {
-                    clearInterval(intervalo); // Para o intervalo da contagem
-                    alert("⏰ Tempo esgotado! Você será redirecionado para o Fim do Jogo.");
-                    window.location.replace("/fim"); // Redireciona para a página de fim do jogo
-                }
-            };
-
-            // Define o intervalo para atualizar o tempo a cada 1 segundo
-            const intervalo = setInterval(atualizarTempo, 1000);
+  // Função para carregar dinâmica do jogo (nova pergunta, pontuação e status)
+  function atualizarEstadoJogo() {
+    fetch("/jogar", { method: "GET" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.fim_de_jogo) {
+          window.location.href = "/fim"; // Redireciona para a página final
+          return;
         }
-    };
 
-    // Oculta mensagens flash após um tempo configurado
-    const ocultarMensagensFlash = () => {
-        const flashMessages = document.querySelector(".flash-messages");
-        if (flashMessages) {
-            // Aguarda 5 segundos antes de iniciar a transição de saída
-            setTimeout(() => {
-                flashMessages.style.transition = "opacity 0.5s ease"; // Animação suave
-                flashMessages.style.opacity = "0"; // Torna o elemento invisível
+        // Atualiza a UI com os dados do backend
+        perguntaContainer.textContent = data.pergunta_atual;
+        statusContainer.innerHTML = `
+          Pontuação: <span>${data.pontuacao}</span> |
+          Nível: <span>${data.nivel}</span> |
+          Perguntas Respondidas: <span>${data.perguntas_respondidas}</span>
+        `;
+        respostaInput.value = ""; // Limpa o campo de resposta
+        mensagemContainer.textContent = ""; // Limpa mensagens anteriores
+      })
+      .catch((err) => console.error("Erro ao atualizar estado do jogo:", err));
+  }
 
-                // Remove o elemento completamente após a animação
-                setTimeout(() => {
-                    flashMessages.remove();
-                }, 500); // Match do tempo da transição
-            }, 5000); // 5 segundos visíveis antes de iniciar a remoção
-        }
-    };
+  // Processar resposta do jogador
+  enviarResposta.addEventListener("click", () => {
+    const resposta = respostaInput.value.trim();
 
-    // Inicializa as funcionalidades
-    iniciarContagemTempo();
-    ocultarMensagensFlash();
+    if (!resposta) {
+      mensagemContainer.textContent = "⚠️ Por favor, insira uma resposta!";
+      mensagemContainer.classList.remove("sucesso", "erro");
+      mensagemContainer.classList.add("aviso");
+      return;
+    }
+
+    fetch("/responder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ resposta: resposta }), // Envia a resposta ao backend
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Exibe o feedback do backend
+        mensagemContainer.textContent = data.mensagem;
+        mensagemContainer.classList.remove("sucesso", "erro", "aviso");
+        mensagemContainer.classList.add(data.correta ? "sucesso" : "erro");
+
+        // Atualiza estado do jogo após a resposta
+        atualizarEstadoJogo();
+      })
+      .catch((err) => console.error("Erro ao enviar resposta:", err));
+  });
+
+  // Inicializa o estado do jogo ao carregar a página
+  atualizarEstadoJogo();
 });

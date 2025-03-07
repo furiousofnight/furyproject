@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogar - Jogo Matemático</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Estilo adicional para customização exclusiva */
+
+        /* Layout principal */
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 18px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #fff;
+        }
+
+        .pergunta {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #00FFAB;
+        }
+
+        .status span {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .botao-resposta {
+            display: block;
+            margin: 15px auto;
+            padding: 15px 20px;
+            text-transform: uppercase;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3A1C71, #D76D77);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .botao-resposta:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #D76D77, #FFAF7B);
+        }
+
+        /* Área de mensagens */
+        .mensagem {
+            margin: 20px 0;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .mensagem.erro {
+            background: #FF6363;
+            color: white;
+        }
+
+        .mensagem.sucesso {
+            background: #28a745;
+            color: white;
+        }
+
+        /* Seção de Power-Ups */
+        .power-ups {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .power-ups h2 {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .power-ups button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #00C9FF, #92FE9D);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .power-ups button:hover {
+            transform: scale(1.1);
+        }
+
+        .power-ups button:disabled {
+            background: gray;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Botão de voltar */
+        .botao-voltar {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease-in-out;
+            background: linear-gradient(135deg, #FF6363, #FFD700);
+        }
+
+        .botao-voltar:hover {
+            transform: scale(1.1);
+            text-shadow: 0 0 5px white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Título -->
+        <h1>🎯 Responda a Pergunta!</h1>
+
+        <!-- Mensagem de erro ou sucesso -->
+        {% if erro %}
+        <div class="mensagem erro">
+            {{ erro }}
+        </div>
+        {% elif mensagem %}
+        <div class="mensagem sucesso">
+            {{ mensagem }}
+        </div>
+        {% endif %}
+
+        <!-- Exibição da pergunta -->
+        <p class="pergunta">{{ pergunta }}</p>
+
+        <!-- Informações de nível e pontuação -->
+        <div class="status">
+            <p>Nível: <span>{{ nivel }}</span></p>
+            <p>Pontuação: <span>{{ pontuacao }}</span></p>
+        </div>
+
+        <!-- Formulário com as opções de resposta -->
+        <form action="{{ url_for('responder') }}" method="post">
+            {% for opcao in opcoes %}
+            <button
+                type="submit"
+                name="resposta"
+                value="{{ opcao }}"
+                class="botao-resposta"
+            >
+                {{ opcao }}
+            </button>
+            {% endfor %}
+        </form>
+
+        <!-- Power-Ups -->
+        <div class="power-ups">
+            <h2>💡 Power-Ups</h2>
+            <!-- Power-Up: Eliminar Respostas -->
+            <form action="{{ url_for('power_up', tipo='eliminar') }}" method="post">
+                {% if power_ups.eliminar > 0 %}
+                <button type="submit" class="botao">
+                    ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
+                </button>
+                {% else %}
+                <button type="submit" class="botao" disabled>
+                    ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
+                </button>
+                {% endif %}
+            </form>
+
+            <!-- Power-Up: Mais Tempo -->
+            <form action="{{ url_for('power_up', tipo='tempo_extra') }}" method="post">
+                {% if power_ups.tempo_extra > 0 %}
+                <button type="submit" class="botao">
+                    ⏳ Mais Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+                </button>
+                {% else %}
+                <button type="submit" class="botao" disabled>
+                    ⏳ Mais Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+                </button>
+                {% endif %}
+            </form>
+
+            <!-- Power-Up: Resposta Certa -->
+            <form action="{{ url_for('power_up', tipo='resposta_certa') }}" method="post">
+                {% if power_ups.resposta_certa > 0 %}
+                <button type="submit" class="botao">
+                    ✔️ Resposta Certa <br> ({{ power_ups.resposta_certa }} restantes)
+                </button>
+                {% else %}
+                <button type="submit" class="botao" disabled>
+                    ✔️ Resposta Certa <br> ({{ power_ups.resposta_certa }} restantes)
+                </button>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Botão de voltar -->
+        <a href="{{ url_for('index') }}" class="botao-voltar">Voltar ao início</a>
+    </div>
+</body>
+</html>
