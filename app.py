@@ -29,57 +29,77 @@ class Jogo:
             "pontuacao": self.pontuacao,
             "nivel_atual": self.nivel_atual,
             "tempo_restante": self.tempo_restante,
+            "power_ups": self.power_ups,
         }
 
     def gerar_questao(self):
-        """Gera uma questão mais desafiadora e define a resposta correta."""
+        """Gera uma questão dinâmica e define a resposta correta."""
         num1 = random.randint(1, 10 * self.nivel_dificuldade)
         num2 = random.randint(1, 10 * self.nivel_dificuldade)
-        operacao = random.choice(["+", "-", "*", "/"])
 
+        operacao = random.choice(["+", "-", "*", "/"])
         questao = f"Quanto é {num1} {operacao} {num2}?"
 
-        try:
-            resultado = eval(f"{num1} {operacao} {num2}")
-            if operacao == "/":
-                resultado = round(resultado, 2)  # Arredonda em casos de divisão
-            self.resposta_correta = resultado
-        except ZeroDivisionError:
-            return self.gerar_questao()  # Gera novamente se houver divisão por zero
+        # Resolver operação explicitamente
+        if operacao == "+":
+            resultado = num1 + num2
+        elif operacao == "-":
+            resultado = num1 - num2
+        elif operacao == "*":
+            resultado = num1 * num2
+        else:  # Divisão
+            while num2 == 0:  # Evita divisão por zero
+                num2 = random.randint(1, 10 * self.nivel_dificuldade)
+            resultado = round(num1 / num2, 2)
 
+        self.resposta_correta = resultado
+
+        # Gera respostas únicas erradas
         respostas_erradas = set()
         while len(respostas_erradas) < 3:
-            resposta_errada = random.randint(1, 10 * self.nivel_atual)
+            resposta_errada = random.randint(1, 10 * self.nivel_dificuldade)
             if resposta_errada != self.resposta_correta:
                 respostas_erradas.add(resposta_errada)
 
+        # Shufflar respostas (incluindo a certa)
         respostas = list(respostas_erradas) + [self.resposta_correta]
         random.shuffle(respostas)
 
         return questao, respostas, self.resposta_correta
 
-    def atualizar_pontuacao(self):
-        """Atualiza a pontuação e verifica se o nível deve aumentar."""
-        self.pontuacao += 10 * self.nivel_atual
-        self.questoes_corretas += 1
-        if self.questoes_corretas % 3 == 0:  # Sobe de nível a cada 3 respostas corretas
+    def atualizar_pontuacao(self, resposta_correta):
+        """Atualiza a pontuação e gerencia mudanças de nível."""
+        if resposta_correta:
+            self.pontuacao += 10 * self.nivel_atual
+            self.questoes_corretas += 1
+        else:
+            # Penaliza o jogador com redução de pontuação e tempo
+            self.pontuacao = max(0, self.pontuacao - 5)  # Evita pontuação negativa
+            self.tempo_restante -= 5
+
+        # Progressão de nível
+        if self.questoes_corretas % 3 == 0 and self.questoes_corretas > 0:
             self.nivel_atual += 1
             self.nivel_dificuldade += 1
-            # Adiciona tempo extra ao subir de nível
-            self.tempo_restante += self.nivel_atual * 10
+            self.tempo_restante += self.nivel_atual * 5  # Bonificação de tempo ao subir de nível
 
     def usar_power_up(self, tipo):
-        """Aplica o efeito do Power-Up."""
-        if self.power_ups[tipo] > 0:
+        """Aplica os efeitos dos power-ups."""
+        if self.power_ups.get(tipo, 0) > 0:
             if tipo == "mais_tempo":
                 self.tempo_restante += 10
+                flash("🕒 Você ganhou +10 segundos!", "info")
             elif tipo == "mais_pontos":
                 self.pontuacao += 50
+                flash("⭐ +50 pontos adicionados!", "info")
             elif tipo == "pular_questao":
-                return True  # Indica que a questão deve ser pulada
+                flash("➡ Questão pulada com sucesso!", "info")
+                return True
+
             self.power_ups[tipo] -= 1
         else:
-            flash(f"Você não tem mais o Power-Up: {tipo}", "error")
+            flash(f"❌ Você não possui mais o Power-Up: {tipo}", "error")
+
         return False
 
 
@@ -91,7 +111,7 @@ def index():
     """Página inicial e principal do jogo."""
     global jogo
     if not jogo.jogo_ativo:
-        jogo = Jogo()
+        jogo = Jogo()  # Reinicia se o jogo não estiver ativo
 
     status = jogo.status_jogo()
     questao, respostas, jogo.resposta_correta = jogo.gerar_questao()
@@ -103,15 +123,24 @@ def index():
 def responder():
     """Rota que processa a resposta do jogador."""
     global jogo
-    resposta_jogador = request.form["escolha"]
 
-    if float(resposta_jogador) == jogo.resposta_correta:
-        flash("Resposta correta! 🎉", "success")
-        jogo.atualizar_pontuacao()
+    # Entrada do jogador
+    resposta_jogador = request.form.get("escolha")
+    try:
+        resposta_jogador = float(resposta_jogador)
+    except ValueError:
+        flash("❌ Escolha inválida! Tente novamente.", "error")
+        return redirect(url_for("index"))
+
+    # Verifica a resposta
+    if resposta_jogador == jogo.resposta_correta:
+        flash("✅ Resposta correta! 🎉", "success")
+        jogo.atualizar_pontuacao(resposta_correta=True)
     else:
-        flash(f"Resposta incorreta! A correta era {jogo.resposta_correta} 😞", "error")
-        jogo.tempo_restante -= 10  # Penalidade por resposta errada
+        flash(f"❌ Resposta incorreta! A correta era {jogo.resposta_correta}.", "error")
+        jogo.atualizar_pontuacao(resposta_correta=False)
 
+    # Verifica se o tempo acabou
     if jogo.tempo_restante <= 0:
         return redirect(url_for("fim_do_jogo"))
 
@@ -122,18 +151,18 @@ def responder():
 def power_up():
     """Rota que processa o uso de Power-Ups."""
     global jogo
-    tipo_power_up = request.form["tipo"]
+    tipo_power_up = request.form.get("tipo")
 
     if jogo.usar_power_up(tipo_power_up):
         if tipo_power_up == "pular_questao":
-            flash("Você pulou a questão!", "info")
+            flash("✅ Você escolheu pular a questão!", "info")
 
     return redirect(url_for("index"))
 
 
 @app.route("/fim")
 def fim_do_jogo():
-    """Rota que exibe a tela final de pontuação."""
+    """Rota que exibe a tela final de pontuação e finaliza o jogo."""
     global jogo
     jogo.jogo_ativo = False
     resultado = {

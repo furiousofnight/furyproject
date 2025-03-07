@@ -35,19 +35,26 @@ class Jogo:
         operacao = random.choice(["+", "-", "*", "/"])
 
         questao = f"Quanto é {num1} {operacao} {num2}?"
-        try:
-            resposta_correta = eval(f"{num1} {operacao} {num2}")
-            if operacao == "/":
-                resposta_correta = round(resposta_correta, 2)
-            self.resposta_correta = resposta_correta
-        except ZeroDivisionError:
-            return self.gerar_questao()  # Evita divisão por zero
+
+        # Resolvendo a operação explicitamente para evitar o uso de eval
+        if operacao == "+":
+            resposta_correta = num1 + num2
+        elif operacao == "-":
+            resposta_correta = num1 - num2
+        elif operacao == "*":
+            resposta_correta = num1 * num2
+        else:  # operação == "/"
+            while num2 == 0:  # Certificar que não haverá divisão por zero
+                num2 = random.randint(1, 10 * self.nivel_dificuldade)
+            resposta_correta = round(num1 / num2, 2)
+
+        self.resposta_correta = resposta_correta
 
         # Gera respostas únicas
         respostas_erradas = set()
         while len(respostas_erradas) < 3:
             resposta_errada = round(random.uniform(1, 10 * self.nivel_dificuldade), 2)
-            if resposta_errada != self.resposta_correta:
+            if resposta_errada != self.resposta_correta:  # Evita duplicatas
                 respostas_erradas.add(resposta_errada)
 
         # Combina a resposta correta com erradas
@@ -71,7 +78,7 @@ class Jogo:
         if self.questoes_corretas >= 5 and self.pontuacao >= pontos_para_evoluir:
             self.nivel_atual += 1
             self.questoes_corretas = 0
-            self.tempo_limite -= 5  # Reduz o tempo como desafio
+            self.tempo_limite = max(5, self.tempo_limite - 5)  # Garante que o tempo não seja menor que 5
             print("\n🔥 Você avançou para o NÍVEL", self.nivel_atual)
 
     def usar_power_up(self, tipo):
@@ -114,7 +121,7 @@ def main() -> None:
 
     while True:
         tempo_restante = jogo.tempo_limite - (time.time() - inicio)
-        if tempo_restante <= 0:
+        if tempo_restante <= 0:  # Verifica se o tempo acabou
             print("\n⏰ Tempo esgotado!")
             jogo.fim_do_jogo()
             break
@@ -137,7 +144,7 @@ def main() -> None:
                     continue  # Se pulou a questão, volta ao início do loop
             else:
                 print("⚠ Power-up inválido! Tente um válido.")
-        elif isinstance(respostas[escolha - 1], (int, float)) and respostas[escolha - 1] == resposta_correta:
+        elif respostas[escolha - 1] == resposta_correta:
             print("✅ Resposta correta!")
             jogo.atualizar_pontuacao(True)
         else:

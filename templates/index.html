@@ -3,42 +3,45 @@
 {% block title %}Jogar{% endblock %}
 
 {% block content %}
-<div class="game-container">
+<div class="game-container text-center py-4">
     <!-- Informações principais do jogo -->
-    <p class="info">⏰ Tempo restante: <span id="tempo-restante">{{ status.tempo_restante }}</span> segundos</p>
-    <p class="info">🔢 Pontuação: {{ status.pontuacao }} | 🏆 Nível: {{ status.nivel_atual }}</p>
+    <div class="game-info mb-4">
+        <p class="info fs-5">⏰ <span class="fw-bold">Tempo restante:</span> <span id="tempo-restante" class="text-danger">{{ status.tempo_restante }}</span> segundos</p>
+        <p class="info fs-5">🔢 <span class="fw-bold">Pontuação:</span> {{ status.pontuacao }} | 🏆 <span class="fw-bold">Nível:</span> {{ status.nivel_atual }}</p>
+    </div>
 
     <!-- Pergunta do jogo -->
-    <h2 class="question">{{ questao }}</h2>
+    <div class="question-container mb-4">
+        <h2 class="question fw-bold text-primary">{{ questao }}</h2>
+    </div>
 
     <!-- Respostas como botões -->
-    <form method="POST" action="/responder">
-        <div class="answers">
+    <form method="POST" action="/responder" class="mb-4">
+        <div class="answers d-grid gap-3">
             {% for resposta in respostas %}
-            <button class="answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
+            <button class="btn btn-outline-primary btn-lg w-50 mx-auto answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
             {% endfor %}
         </div>
     </form>
 
     <!-- Power-Ups -->
-    <h3>Power-Ups</h3>
-    <form method="POST" action="/power-up">
-        <div class="powerups-container">
-            <button class="powerup-btn" type="submit" name="tipo" value="mais_tempo">⏳ +10 segundos</button>
-            <button class="powerup-btn" type="submit" name="tipo" value="mais_pontos">🔢 +50 Pontos</button>
-            <button class="powerup-btn" type="submit" name="tipo" value="pular_questao">⏭️ Pular Questão</button>
-        </div>
-    </form>
-
-    <!-- Mensagens de Feedback -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="flash-messages">
-        {% for message in messages %}
-        <p class="flash-message">{{ message }}</p>
-        {% endfor %}
+    <div class="powerups-container">
+    <button class="powerup-btn">Power-Up 1</button>
+    <button class="powerup-btn">Power-Up 2</button>
+    <button class="powerup-btn">Power-Up 3</button>
     </div>
-    {% endif %}
-    {% endwith %}
 </div>
+
+<!-- Mensagens de Feedback -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages mt-4 w-75 mx-auto">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} text-center" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 {% endblock %}
