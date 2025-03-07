@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Título da página com bloco dinâmico -->
+    <title>{% block title %}Jogo Matemático{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Cabeçalho -->
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="/" class="navbar-brand">🎮 Jogo Matemático</a>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main>
+        <!-- Exibição de mensagens de ‘feedback’ (flash) -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Bloco de conteúdo dinâmico -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="main-footer">
+        <p>Feito com 💻 por Você | <a href="https://github.com/">GitHub</a>.</p>
+    </footer>
+
+    <!-- Scripts JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

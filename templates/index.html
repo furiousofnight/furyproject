@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Jogar{% endblock %}
+
+{% block content %}
+<div class="game-container">
+    <!-- Informações principais do jogo -->
+    <p class="info">⏰ Tempo restante: <span id="tempo-restante">{{ status.tempo_restante }}</span> segundos</p>
+    <p class="info">🔢 Pontuação: {{ status.pontuacao }} | 🏆 Nível: {{ status.nivel_atual }}</p>
+
+    <!-- Pergunta do jogo -->
+    <h2 class="question">{{ questao }}</h2>
+
+    <!-- Respostas como botões -->
+    <form method="POST" action="/responder">
+        <div class="answers">
+            {% for resposta in respostas %}
+            <button class="answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
+            {% endfor %}
+        </div>
+    </form>
+
+    <!-- Power-Ups -->
+    <h3>Power-Ups</h3>
+    <form method="POST" action="/power-up">
+        <div class="powerups-container">
+            <button class="powerup-btn" type="submit" name="tipo" value="mais_tempo">⏳ +10 segundos</button>
+            <button class="powerup-btn" type="submit" name="tipo" value="mais_pontos">🔢 +50 Pontos</button>
+            <button class="powerup-btn" type="submit" name="tipo" value="pular_questao">⏭️ Pular Questão</button>
+        </div>
+    </form>
+
+    <!-- Mensagens de Feedback -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+        <p class="flash-message">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}

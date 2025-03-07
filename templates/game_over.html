@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Fim do Jogo{% endblock %}
+
+{% block content %}
+<div class="game-over-container">
+    <h2 class="game-over-title">🎮 Fim do Jogo!</h2>
+    <div class="game-summary">
+        <p>🏆 Pontuação final: <strong>{{ resultado.pontuacao }}</strong></p>
+        <p>🔢 Nível alcançado: <strong>{{ resultado.nivel_atual }}</strong></p>
+        <p>⏰ Tempo restante: <strong>{{ resultado.tempo_restante }}</strong> segundos</p>
+    </div>
+    <a href="/" class="play-again-btn">🔁 Jogar Novamente</a>
+</div>
+{% endblock %}
