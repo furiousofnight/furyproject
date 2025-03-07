@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 import random
 import os
-import time
 
 # Criação da aplicação Flask
 app = Flask(__name__)
 
 # Configuração de segurança: SECRET_KEY lida como variável de ambiente
-# O padrão "chave_secreta_para_dev" é usado apenas em ambiente de desenvolvimento/local
+# "chave_secreta_para_dev" é usada apenas em desenvolvimento/local
 app.secret_key = os.environ.get("SECRET_KEY", "chave_secreta_para_dev")
 
 
@@ -18,12 +17,10 @@ class Jogo:
         self.questoes_corretas = 0
         self.jogo_ativo = True
         self.resposta_correta = None
-        self.tempo_limite = 30  # Tempo inicial por nível (em segundos)
+        self.tempo_limite = 30  # Tempo inicial (em segundos)
         self.tempo_restante = self.tempo_limite
         self.power_ups = {"mais_tempo": 2, "mais_pontos": 2, "pular_questao": 2}
         self.nivel_dificuldade = 1
-        self.inicio = True  # Para indicar se é o início do jogo
-        self.popup_ativo = False  # FLAG: Bloqueio durante o popup
 
     def status_jogo(self):
         """Retorna o status atual do jogo."""
@@ -35,14 +32,12 @@ class Jogo:
         }
 
     def gerar_questao(self):
-        """Gera uma questão dinâmica e define a resposta correta."""
+        """Gera uma questão aleatória e define a resposta correta."""
         num1 = random.randint(1, 10 * self.nivel_dificuldade)
         num2 = random.randint(1, 10 * self.nivel_dificuldade)
-
         operacao = random.choice(["+", "-", "*", "/"])
         questao = f"Quanto é {num1} {operacao} {num2}?"
 
-        # Resolver operação explicitamente
         if operacao == "+":
             resultado = num1 + num2
         elif operacao == "-":
@@ -51,42 +46,40 @@ class Jogo:
             resultado = num1 * num2
         else:  # Divisão
             while num2 == 0:  # Evita divisão por zero
-                num2 = random.randint(1, 10 * self.nivel_dificuldade)
+                num2 = random.randint(1, 10)
             resultado = round(num1 / num2, 2)
 
         self.resposta_correta = resultado
 
-        # Gera respostas únicas erradas
+        # Gera respostas erradas exclusivas
         respostas_erradas = set()
         while len(respostas_erradas) < 3:
             resposta_errada = random.randint(1, 10 * self.nivel_dificuldade)
             if resposta_errada != self.resposta_correta:
                 respostas_erradas.add(resposta_errada)
 
-        # Shufflar respostas (incluindo a certa)
+        # Mescla respostas e embaralha
         respostas = list(respostas_erradas) + [self.resposta_correta]
         random.shuffle(respostas)
 
-        return questao, respostas, self.resposta_correta
+        return questao, respostas
 
     def atualizar_pontuacao(self, resposta_correta):
-        """Atualiza a pontuação e gerencia mudanças de nível."""
+        """Atualiza a pontuação e faz progresso no nível."""
         if resposta_correta:
             self.pontuacao += 10 * self.nivel_atual
             self.questoes_corretas += 1
         else:
-            # Penaliza o jogador com redução de pontuação e tempo
-            self.pontuacao = max(0, self.pontuacao - 5)  # Evita pontuação negativa
-            self.tempo_restante -= 5
+            self.pontuacao = max(0, self.pontuacao - 5)  # Sem pontuações negativas
 
-        # Progressão de nível
+        # Checa progresso para subir de nível
         if self.questoes_corretas % 3 == 0 and self.questoes_corretas > 0:
             self.nivel_atual += 1
             self.nivel_dificuldade += 1
-            self.tempo_restante += self.nivel_atual * 5  # Bonificação de tempo ao subir de nível
+            self.tempo_restante += 5  # Bonificação ao subir de nível
 
     def usar_power_up(self, tipo):
-        """Aplica os efeitos dos power-ups."""
+        """Aplica os efeitos de Power-Ups."""
         if self.power_ups.get(tipo, 0) > 0:
             if tipo == "mais_tempo":
                 self.tempo_restante += 10
@@ -100,63 +93,48 @@ class Jogo:
 
             self.power_ups[tipo] -= 1
         else:
-            flash(f"❌ Você não possui mais o Power-Up: {tipo}", "error")
-
+            flash(f"❌ Power-Up {tipo} indisponível!", "error")
         return False
 
-    def exibir_popup(self, mensagem):
-        """Simula bloqueio enquanto exibe mensagens popup."""
-        self.popup_ativo = True
-        flash(mensagem, "info")
-        time.sleep(2)  # Simula um pequeno atraso para o popup
-        self.popup_ativo = False
 
-
-# Gerencia o objeto global do jogo
+# Gerencia o objeto do jogo
 jogo = Jogo()
 
 
 @app.route("/")
 def index():
-    """Página inicial e principal do jogo."""
+    """Página inicial."""
     global jogo
-    if not jogo.jogo_ativo:
-        jogo = Jogo()  # Reinicia se o jogo não estiver ativo
 
-    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
-        return redirect(url_for("index"))
+    if not jogo.jogo_ativo:
+        jogo = Jogo()  # Reinicia jogo
 
     status = jogo.status_jogo()
-    questao, respostas, jogo.resposta_correta = jogo.gerar_questao()
+    questao, respostas = jogo.gerar_questao()
 
     return render_template("index.html", status=status, questao=questao, respostas=respostas)
 
 
 @app.route("/responder", methods=["POST"])
 def responder():
-    """Rota que processa a resposta do jogador."""
+    """Processa a resposta do jogador."""
     global jogo
-    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
-        flash("⏳ Aguarde antes de responder.", "warning")
-        return redirect(url_for("index"))
-
-    # Entrada do jogador
     resposta_jogador = request.form.get("escolha")
+
     try:
         resposta_jogador = float(resposta_jogador)
     except ValueError:
-        flash("❌ Escolha inválida! Tente novamente.", "error")
+        flash("❌ Resposta inválida.", "error")
         return redirect(url_for("index"))
 
-    # Verifica a resposta
     if resposta_jogador == jogo.resposta_correta:
-        jogo.exibir_popup("✅ Resposta correta! 🎉")
         jogo.atualizar_pontuacao(resposta_correta=True)
+        flash("✅ Resposta correta!", "info")
     else:
-        jogo.exibir_popup(f"❌ Resposta incorreta! A correta era {jogo.resposta_correta}.")
         jogo.atualizar_pontuacao(resposta_correta=False)
+        flash(f"❌ Resposta errada! A correta era {jogo.resposta_correta}.", "error")
 
-    # Verifica se o tempo acabou
+    # Checa se o tempo acabou
     if jogo.tempo_restante <= 0:
         return redirect(url_for("fim_do_jogo"))
 
@@ -165,35 +143,38 @@ def responder():
 
 @app.route("/power-up", methods=["POST"])
 def power_up():
-    """Rota que processa o uso de Power-Ups."""
+    """Usa um Power-Up."""
     global jogo
-    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
-        flash("⏳ Aguarde antes de usar um power-up.", "warning")
-        return redirect(url_for("index"))
-
     tipo_power_up = request.form.get("tipo")
-
-    if jogo.usar_power_up(tipo_power_up):
-        if tipo_power_up == "pular_questao":
-            flash("✅ Você escolheu pular a questão!", "info")
-
+    jogo.usar_power_up(tipo_power_up)
     return redirect(url_for("index"))
+
+
+@app.route("/ranking")
+def ranking():
+    """Exibe a tabela de rankings."""
+    # Exemplo de dados de ranking
+    ranking_data = [
+        {"jogador": "Maria", "pontuacao": 1500, "nivel": 12},
+        {"jogador": "José", "pontuacao": 1350, "nivel": 10},
+        {"jogador": "Ana", "pontuacao": 1200, "nivel": 9}
+    ]
+
+    return render_template("ranking.html", ranking=ranking_data)
 
 
 @app.route("/fim")
 def fim_do_jogo():
-    """Rota que exibe a tela final de pontuação e finaliza o jogo."""
+    """Tela de fim do jogo."""
     global jogo
     jogo.jogo_ativo = False
     resultado = {
         "pontuacao": jogo.pontuacao,
         "nivel_atual": jogo.nivel_atual,
-        "tempo_restante": jogo.tempo_restante,
     }
     return render_template("game_over.html", resultado=resultado)
 
 
 if __name__ == "__main__":
-    # Configuração para produção
-    port = int(os.getenv("PORT", 5000))  # Porta configurada no ambiente (Heroku configura automaticamente)
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

@@ -4,6 +4,7 @@
 
 {% block content %}
 
+<!-- Seção Inicial do Jogo -->
 <div class="hero-section text-center py-5">
     <h1 class="text-primary fw-bold display-4">🎮 Bem-vindo ao Jogo Matemático</h1>
     <p class="fs-5 text-light mt-3">Pronto para desafiar sua mente e se divertir com matemática? Suba de nível enquanto responde perguntas e use Power-Ups para se superar!</p>
@@ -12,10 +13,11 @@
     </div>
 </div>
 
+<!-- Como Jogar -->
 <div class="container mt-5">
-    <!-- Seção Como Jogar -->
     <div class="row align-items-center py-5">
         <div class="col-md-6 text-center">
+            <!-- Caminho Correto para o SVG -->
             <img src="{{ url_for('static', filename='images/how_to_play.svg') }}" alt="Como Jogar"
                  class="img-fluid" style="max-height: 250px;">
         </div>
@@ -31,7 +33,7 @@
     </div>
 </div>
 
-<!-- Seção sobre Power-Ups -->
+<!-- Power-Ups -->
 <div class="powerups-section text-center py-5 bg-dark">
     <div class="container">
         <h2 class="text-warning fw-bold mb-4">💡 Power-Ups para te ajudar!</h2>
@@ -62,7 +64,7 @@
     </div>
 </div>
 
-<!-- Seção Pontuações e ‘Feedback’ -->
+<!-- Pontuações Recentes -->
 <div class="scores-section container my-5 text-center">
     <h2 class="text-primary fw-bold">🏆 Pontuações Recentes</h2>
     <p class="text-light fs-5">Aqui estão algumas das melhores pontuações da comunidade:</p>
@@ -97,7 +99,7 @@
     </div>
 </div>
 
-<!-- Seção Rodapé de Crédito -->
+<!-- Rodapé ou Chamada para Ação -->
 <div class="footer-cta text-center py-4 bg-secondary text-light">
     <h3 class="fw-bold">🤔 Está preparado? Não deixe para depois!</h3>
     <a href="/jogar" class="btn btn-primary btn-lg mt-3">Começar Agora!</a>

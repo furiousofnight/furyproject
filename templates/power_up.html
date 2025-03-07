@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Power-Up{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="text-success fw-bold">💡 Power-Up Ativado!</h1>
+    <p class="fs-4 text-light mt-3">Você usou o power-up <span class="text-warning fw-bold">{{ tipo }}</span>!</p>
+    <p class="fs-5 text-light">Boa sorte na próxima pergunta! 😎</p>
+    <a href="/jogar" class="btn btn-primary btn-lg mt-4">Continuar Jogando</a>
+</div>
+{% endblock %}
