@@ -103,6 +103,7 @@ class Jogo:
         return False
 
 
+# Gerencia o objeto global do jogo
 jogo = Jogo()
 
 
