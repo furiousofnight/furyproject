@@ -11,6 +11,7 @@ class Jogo:
         self.nivel_atual = 1
         self.questoes_corretas = 0
         self.power_ups = {"mais_tempo": 1, "mais_pontos": 1, "pular_questao": 1}
+        self.popup_ativo = False  # NOVA FLAG: para controlar exibição de mensagens
 
     def fim_do_jogo(self):
         """Exibe a mensagem de fim do jogo e a pontuação final."""
@@ -98,6 +99,13 @@ class Jogo:
             print("❌ Power-up indisponível!")
         return False
 
+    def exibir_popup(self, mensagem):
+        """Exibe um popup simulando resposta correta ou incorreta."""
+        self.popup_ativo = True  # Ativa o estado de bloqueio
+        print(f"\n📢 {mensagem}")
+        time.sleep(2)  # Exibe o popup por 2 segundos
+        self.popup_ativo = False  # Desativa o estado de bloqueio
+
 
 def obter_escolha_usuario(qtd_opcoes, mensagem="Escolha: "):
     """Obtém a entrada do utilizador e valida-a."""
@@ -126,6 +134,9 @@ def main() -> None:
             jogo.fim_do_jogo()
             break
 
+        if jogo.popup_ativo:  # Verifica se o popup está ativo
+            continue  # Bloqueia novas entradas até que o popup desapareça
+
         jogo.imprimir_status(tempo_restante)
 
         # Gera a questão e as respostas
@@ -145,10 +156,10 @@ def main() -> None:
             else:
                 print("⚠ Power-up inválido! Tente um válido.")
         elif respostas[escolha - 1] == resposta_correta:
-            print("✅ Resposta correta!")
+            jogo.exibir_popup("✅ Resposta correta!")
             jogo.atualizar_pontuacao(True)
         else:
-            print(f"❌ Resposta incorreta! A resposta correta era {resposta_correta}")
+            jogo.exibir_popup(f"❌ Resposta incorreta! A resposta correta era {resposta_correta}")
             jogo.atualizar_pontuacao(False)
 
         jogo.verificar_nivel()

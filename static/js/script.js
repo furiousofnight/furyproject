@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Função para gerenciar o tempo restante no jogo
+    // Gerencia o tempo restante no jogo
     const iniciarContagemTempo = () => {
         const tempoRestanteEl = document.getElementById("tempo-restante");
 
@@ -11,34 +11,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     tempoAtual--;
                     tempoRestanteEl.textContent = tempoAtual;
                 } else {
-                    clearInterval(intervalo);
+                    clearInterval(intervalo); // Para o intervalo da contagem
                     alert("⏰ Tempo esgotado! Você será redirecionado para o Fim do Jogo.");
-                    window.location.replace("/fim"); // Redireciona para a tela final
+                    window.location.replace("/fim"); // Redireciona para a página de fim do jogo
                 }
             };
 
-            // Atualiza o tempo a cada 1 segundo
+            // Define o intervalo para atualizar o tempo a cada 1 segundo
             const intervalo = setInterval(atualizarTempo, 1000);
         }
     };
 
-    // Função para ocultar mensagens flash após um tempo
+    // Oculta mensagens flash após um tempo configurado
     const ocultarMensagensFlash = () => {
         const flashMessages = document.querySelector(".flash-messages");
         if (flashMessages) {
+            // Aguarda 5 segundos antes de iniciar a transição de saída
             setTimeout(() => {
-                flashMessages.style.transition = "opacity 0.5s ease";
-                flashMessages.style.opacity = "0";
+                flashMessages.style.transition = "opacity 0.5s ease"; // Animação suave
+                flashMessages.style.opacity = "0"; // Torna o elemento invisível
 
-                // Remove o elemento após a animação de saída
+                // Remove o elemento completamente após a animação
                 setTimeout(() => {
                     flashMessages.remove();
-                }, 500); // Tempo para completar a transição
-            }, 5000); // Visível por 5 segundos
+                }, 500); // Match do tempo da transição
+            }, 5000); // 5 segundos visíveis antes de iniciar a remoção
         }
     };
 
-    // Inicialização das funcionalidades
+    // Inicializa as funcionalidades
     iniciarContagemTempo();
     ocultarMensagensFlash();
 });

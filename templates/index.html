@@ -6,8 +6,10 @@
 <div class="game-container text-center py-4">
     <!-- Informações principais do jogo -->
     <div class="game-info mb-4">
-        <p class="info fs-5">⏰ <span class="fw-bold">Tempo restante:</span> <span id="tempo-restante" class="text-danger">{{ status.tempo_restante }}</span> segundos</p>
-        <p class="info fs-5">🔢 <span class="fw-bold">Pontuação:</span> {{ status.pontuacao }} | 🏆 <span class="fw-bold">Nível:</span> {{ status.nivel_atual }}</p>
+        <p class="info fs-5">⏰ <span class="fw-bold">Tempo restante:</span>
+            <span id="tempo-restante" class="text-danger">{{ status.tempo_restante }}</span> segundos</p>
+        <p class="info fs-5">🔢 <span class="fw-bold">Pontuação:</span> {{ status.pontuacao }} | 🏆
+            <span class="fw-bold">Nível:</span> {{ status.nivel_atual }}</p>
     </div>
 
     <!-- Pergunta do jogo -->
@@ -19,29 +21,36 @@
     <form method="POST" action="/responder" class="mb-4">
         <div class="answers d-grid gap-3">
             {% for resposta in respostas %}
-            <button class="btn btn-outline-primary btn-lg w-50 mx-auto answer-btn" type="submit" name="escolha" value="{{ resposta }}">{{ resposta }}</button>
+            <button class="btn btn-outline-primary btn-lg w-50 mx-auto answer-btn"
+                    type="submit" name="escolha" value="{{ resposta }}">
+                {{ resposta }}
+            </button>
             {% endfor %}
         </div>
     </form>
 
-    <!-- Power-Ups -->
-    <div class="powerups-container">
-    <button class="powerup-btn">Power-Up 1</button>
-    <button class="powerup-btn">Power-Up 2</button>
-    <button class="powerup-btn">Power-Up 3</button>
-    </div>
-</div>
+    <!-- Botões de Power-Ups -->
+    <form method="POST" action="/power-up" class="powerups-container">
+        {% for tipo, quantidade in status.power_ups.items() %}
+        <button type="submit" name="tipo" value="{{ tipo }}"
+                class="powerup-btn btn btn-outline-success w-25 mx-1"
+                {{ 'disabled' if quantidade == 0 else '' }}>
+            {{ tipo.replace('_', ' ').capitalize() }} ({{ quantidade }})
+        </button>
+        {% endfor %}
+    </form>
 
-<!-- Mensagens de Feedback -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div class="flash-messages mt-4 w-75 mx-auto">
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} text-center" role="alert">
-        {{ message }}
+    <!-- Indicador de Flash Messages de Feedback -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages mt-4 w-75 mx-auto">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+    {% endif %}
+    {% endwith %}
 </div>
-{% endif %}
-{% endwith %}
 {% endblock %}

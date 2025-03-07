@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 import random
 import os
+import time
 
 # Criação da aplicação Flask
 app = Flask(__name__)
@@ -22,6 +23,7 @@ class Jogo:
         self.power_ups = {"mais_tempo": 2, "mais_pontos": 2, "pular_questao": 2}
         self.nivel_dificuldade = 1
         self.inicio = True  # Para indicar se é o início do jogo
+        self.popup_ativo = False  # FLAG: Bloqueio durante o popup
 
     def status_jogo(self):
         """Retorna o status atual do jogo."""
@@ -102,6 +104,13 @@ class Jogo:
 
         return False
 
+    def exibir_popup(self, mensagem):
+        """Simula bloqueio enquanto exibe mensagens popup."""
+        self.popup_ativo = True
+        flash(mensagem, "info")
+        time.sleep(2)  # Simula um pequeno atraso para o popup
+        self.popup_ativo = False
+
 
 # Gerencia o objeto global do jogo
 jogo = Jogo()
@@ -114,6 +123,9 @@ def index():
     if not jogo.jogo_ativo:
         jogo = Jogo()  # Reinicia se o jogo não estiver ativo
 
+    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
+        return redirect(url_for("index"))
+
     status = jogo.status_jogo()
     questao, respostas, jogo.resposta_correta = jogo.gerar_questao()
 
@@ -124,6 +136,9 @@ def index():
 def responder():
     """Rota que processa a resposta do jogador."""
     global jogo
+    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
+        flash("⏳ Aguarde antes de responder.", "warning")
+        return redirect(url_for("index"))
 
     # Entrada do jogador
     resposta_jogador = request.form.get("escolha")
@@ -135,10 +150,10 @@ def responder():
 
     # Verifica a resposta
     if resposta_jogador == jogo.resposta_correta:
-        flash("✅ Resposta correta! 🎉", "success")
+        jogo.exibir_popup("✅ Resposta correta! 🎉")
         jogo.atualizar_pontuacao(resposta_correta=True)
     else:
-        flash(f"❌ Resposta incorreta! A correta era {jogo.resposta_correta}.", "error")
+        jogo.exibir_popup(f"❌ Resposta incorreta! A correta era {jogo.resposta_correta}.")
         jogo.atualizar_pontuacao(resposta_correta=False)
 
     # Verifica se o tempo acabou
@@ -152,6 +167,10 @@ def responder():
 def power_up():
     """Rota que processa o uso de Power-Ups."""
     global jogo
+    if jogo.popup_ativo:  # Bloqueia se o popup estiver ativo
+        flash("⏳ Aguarde antes de usar um power-up.", "warning")
+        return redirect(url_for("index"))
+
     tipo_power_up = request.form.get("tipo")
 
     if jogo.usar_power_up(tipo_power_up):

@@ -92,22 +92,22 @@ main {
 
 .answers {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    margin: 2rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin: 1.5rem 0;
 }
 
 .answer-btn {
-    padding: 15px 25px;
+    padding: 12px 20px; /* Diminuído */
     background: #16213e;
     color: #f5f5f5;
     border: 2px solid #e94560;
-    border-radius: 12px;
-    font-size: 1.1rem;
+    border-radius: 10px;
+    font-size: 1rem; /* Diminuído */
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.3s, background 0.3s ease-in-out, color 0.3s ease-in-out;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.4);
 }
 
 .answer-btn:hover {
@@ -119,30 +119,30 @@ main {
 /* Power-Ups */
 .powerups-container {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 3rem 0;
+    margin: 2rem 0;
 }
 
 .powerup-btn {
-    padding: 20px 30px; /* Aumenta o espaço interno */
+    padding: 15px 25px; /* Diminuído */
     background: #0f3469;
     color: white;
-    border: 3px solid #e94560;
-    border-radius: 12px; /* Deixa as bordas mais arredondadas */
-    font-size: 1.5rem; /* Aumenta o tamanho da fonte */
+    border: 2px solid #e94560; /* Mais fino */
+    border-radius: 10px; /* Mais arredondadas */
+    font-size: 1.2rem; /* Diminuído */
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Sombra um pouco mais forte */
-    min-width: 150px; /* Define uma largura mínima para os botões */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    min-width: 120px; /* Largura mínima menor */
 }
 
 .powerup-btn:hover {
-    transform: scale(1.15); /* Torna o efeito hover mais perceptível */
+    transform: scale(1.1); /* Efeito hover sutil */
     background: #16213e;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); /* Efeito de destaque no hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Fim do Jogo */
@@ -156,14 +156,14 @@ main {
 }
 
 .game-over-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem; /* Reduzido */
     color: #e94560;
     margin-bottom: 20px;
     text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8);
 }
 
 .game-summary p {
-    font-size: 1.4rem;
+    font-size: 1.3rem; /* Reduzido */
     margin: 10px 0;
     color: #eeeeee;
 }
@@ -171,13 +171,13 @@ main {
 .play-again-btn {
     display: inline-block;
     margin-top: 20px;
-    padding: 15px 35px;
+    padding: 12px 25px; /* Ajustado */
     background: #e94560;
     color: white;
     text-decoration: none;
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* Reduzido */
     font-weight: bold;
-    border-radius: 15px;
+    border-radius: 12px;
     transition: background 0.3s, transform 0.3s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
@@ -192,11 +192,11 @@ main {
 /* Rodapé */
 footer.main-footer {
     text-align: center;
-    padding: 2rem;
+    padding: 1.8rem; /* Ligeiramente menor */
     background: #0f3469;
     color: #b1b1b1;
     border-top: 3px solid #e94560;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Reduzido */
 }
 
 footer a {
@@ -213,23 +213,28 @@ footer a:hover {
 /* Responsividade */
 @media (max-width: 768px) {
     header .navbar a {
-        font-size: 1.5rem;
+        font-size: 1.4rem; /* Ajustado para telas menores */
+    }
+
+    .game-container .info {
+        font-size: 1rem; /* Reduzido */
     }
 
     .answers {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Respostas em coluna no celular */
     }
 
-    .info {
-        font-size: 1.1rem;
-    }
-
-    .game-over-title {
-        font-size: 2rem;
+    .powerup-btn {
+        padding: 12px; /* Reduz tamanho nos celulares */
+        font-size: 1rem; /* Texto menor */
     }
 
     .play-again-btn {
-        padding: 12px 20px;
-        font-size: 1rem;
+        padding: 10px 20px; /* Mais compacto */
+        font-size: 1rem; /* Ajustado */
+    }
+
+    .game-over-title {
+        font-size: 1.8rem; /* Compactado */
     }
 }
