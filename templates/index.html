@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início - Jogo Fodástico</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>Início - Jogo Matemático</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        /* Gradiente animado no plano de fundo */
+        /* Gradiente de fundo animado */
         body {
             background: linear-gradient(135deg, #141E30, #243B55);
             background-size: 200% 200%;
@@ -16,8 +16,8 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             text-align: center;
         }
@@ -28,14 +28,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Ajustes para o contêiner principal */
+        /* Estilo do contêiner principal */
         .container {
+            max-width: 700px;
             background: rgba(0, 0, 0, 0.85);
             border: 2px solid #00C9FF;
             border-radius: 10px;
             padding: 30px 40px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
-            max-width: 600px;
         }
 
         /* Estilo do título */
@@ -52,19 +52,20 @@
             50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00C9FF; }
         }
 
-        /* Ajustes para o parágrafo */
+        /* Parágrafo de introdução */
         p {
             font-size: 1.3rem;
-            margin-bottom: 30px;
             color: #ffffff;
             line-height: 1.6;
+            margin-bottom: 30px;
         }
 
-        /* Estilo dos botões */
+        /* Botões */
         .botao-container {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 15px;
+            justify-content: center;
         }
 
         .botao {
@@ -77,9 +78,9 @@
             font-weight: bold;
             color: #fff;
             background: linear-gradient(135deg, #00C9FF, #92FE9D);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
         }
@@ -93,8 +94,8 @@
             background: linear-gradient(135deg, #7352FF, #E73C7E);
         }
 
-        /* Responsividade - ajuste para telas menores */
-        @media (max-width: 600px) {
+        /* Responsividade */
+        @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
             }
@@ -104,22 +105,33 @@
             }
 
             .botao {
-                font-size: 1rem;
+                font-size: 0.9rem;
                 padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .botao {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bem-vindo ao Jogo Fodástico!</h1>
-        <p>💡 Está pronto para testar os seus conhecimentos e divertir-se? Suba os níveis, vença os desafios e mostre que você é o mestre das perguntas!</p>
+        <!-- Título -->
+        <h1>Bem-vindo ao Jogo Matemático!</h1>
+
+        <!-- Introdução -->
+        <p>💡 Teste seus conhecimentos matemáticos e divirta-se! Suba de nível, enfrente desafios e conquiste o topo do ranking.</p>
+
+        <!-- Botões de navegação -->
         <div class="botao-container">
-            <!-- Botão para Iniciar Jogo -->
+            <!-- Botão Iniciar -->
             <a href="{{ url_for('jogar') }}" class="botao botao-principal">Iniciar Jogo</a>
-            <!-- Botão para Ver as Regras -->
-            <a href="{{ url_for('regras') }}" class="botao">Ver Regras</a>
-            <!-- Botão para Consultar o Ranking -->
+            <!-- Botão Regras -->
+            <a href="{{ url_for('regras') }}" class="botao">Regras</a>
+            <!-- Botão Ranking -->
             <a href="{{ url_for('ver_ranking') }}" class="botao">Ranking</a>
         </div>
     </div>

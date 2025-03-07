@@ -1,8 +1,8 @@
 import json
+import operator
 import os
 import random
 import time
-import operator
 from typing import Any
 
 from flask import Flask, render_template, request, redirect, url_for
@@ -12,7 +12,7 @@ from flask import Flask, render_template, request, redirect, url_for
 # ------------------------------
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "seu_super_segredo_avancado")  # Variável de ambiente para o segredo
+app.secret_key = os.environ.get("SECRET_KEY", "seu_super_segredo_avancado")
 
 # ------------------------------
 # Módulo de Operadores Seguros
@@ -32,30 +32,23 @@ OPERADORES = {
 
 class Jogo:
     def __init__(self):
-        """
-        Inicializa os atributos principais do jogo.
-        """
+        """Inicializa os atributos principais do jogo."""
         self.nivel = 1
         self.pontuacao = 0
         self.perguntas_respondidas = 0
         self.pergunta_atual = {}
         self.fim_de_jogo = False
         self.tempo_inicio = None
-        self.power_ups = {'eliminar': 3, 'tempo_extra': 3, 'resposta_certa': 1}  # Power-Ups iniciais
+        self.power_ups = {'eliminar': 3, 'tempo_extra': 3, 'resposta_certa': 1}
         self.ranking_file = "ranking.json"
 
-        # Criação do ranking.json caso não exista
         if not os.path.exists(self.ranking_file):
             with open(self.ranking_file, 'w', encoding='utf-8') as f:
                 json.dump([], f)
 
     def gerar_pergunta(self):
-        """
-        Gera perguntas de forma dinâmica com base no nível do jogador.
-        """
+        """Gera perguntas de forma dinâmica com base no nível do jogador."""
         dificuldade = self.nivel
-
-        # Definição dos números e do operador baseados no nível
         if dificuldade <= 5:
             n1, n2 = random.randint(1, 20), random.randint(1, 20)
             operador = random.choice(["+", "-"])
@@ -63,28 +56,21 @@ class Jogo:
             n1, n2 = random.randint(10, 50), random.randint(10, 50)
             operador = random.choice(["+", "-", "*"])
         else:
-            n1, n2 = random.randint(20, 100), random.randint(1, 20)  # Evitar divisão por zero
+            n1, n2 = random.randint(20, 100), random.randint(1, 20)
             operador = random.choice(["+", "-", "*", "/"])
 
-        # Cálculo da resposta usando operadores válidos
         resposta_correta = OPERADORES[operador](n1, n2)
-
-        # Arredonda a resposta no caso de divisões
         if operador == "/":
             resposta_correta = round(resposta_correta, 1)
 
-        # Salva a pergunta gerada
         self.pergunta_atual = {
             "pergunta": f"Quanto é {n1} {operador} {n2}?",
             "resposta": str(resposta_correta),
         }
-        self.tempo_inicio = time.time()  # Registra o início do tempo para a nova pergunta
+        self.tempo_inicio = time.time()
 
     def verificar_resposta(self, resposta: str) -> bool:
-        """
-        Verifica se a resposta está correta, atualizando a pontuação e o estado do jogo.
-        """
-        # Verifica se o tempo para a pergunta já acabou
+        """Verifica se a resposta está correta e atualiza o estado do jogo."""
         if self.calcular_tempo_restante() <= 0:
             self.fim_de_jogo = True
             return False
@@ -100,39 +86,29 @@ class Jogo:
             return False
 
     def calcular_tempo_restante(self) -> int:
-        """
-        Calcula o tempo restante (em segundos) com base no tempo de início e o tempo limite.
-        Retorna 0 se o tempo acabou.
-        """
-        limite_tempo = 30  # Tempo limite de 30 segundos por pergunta
+        """Calcula o tempo restante com base no limite de 30 segundos."""
+        limite_tempo = 30
         if not self.tempo_inicio:
-            return limite_tempo  # Se ainda não foi iniciado, retorna o tempo total
-
+            return limite_tempo
         tempo_passado = time.time() - self.tempo_inicio
         return max(0, int(limite_tempo - tempo_passado))
 
     def atualizar_nivel(self):
-        """
-        Atualiza o nível com base na pontuação acumulada.
-        """
+        """Atualiza o nível com base na pontuação."""
         novo_nivel = self.pontuacao // 50 + 1
         if novo_nivel > self.nivel:
             self.nivel = novo_nivel
         self.verificar_fim_de_jogo()
 
     def verificar_fim_de_jogo(self):
-        """
-        Determina as condições de fim de jogo (vitória ou derrota).
-        """
+        """Determina as condições de vitória ou derrota no jogo."""
         if self.pontuacao >= 1500:
-            self.fim_de_jogo = True  # Vitória
+            self.fim_de_jogo = True
         elif self.pontuacao <= 0:
-            self.fim_de_jogo = True  # Derrota
+            self.fim_de_jogo = True
 
     def salvar_ranking(self, nome: str):
-        """
-        Salva o jogador no ranking.
-        """
+        """Salva o jogador no arquivo de ‘ranking’."""
         ranking_data = self.carregar_ranking()
         ranking_data.append({"nome": nome, "pontuacao": self.pontuacao, "nivel": self.nivel})
         ranking_data = sorted(ranking_data, key=lambda x: x["pontuacao"], reverse=True)[:10]
@@ -140,38 +116,51 @@ class Jogo:
             json.dump(ranking_data, f, ensure_ascii=False)
 
     def carregar_ranking(self) -> list[dict[str, Any]]:
-        """
-        Carrega o ranking do arquivo.
-        """
+        """Carrega o ranking do arquivo."""
         with open(self.ranking_file, "r", encoding="utf-8") as f:
             return json.load(f)
 
     def usar_power_up(self, tipo: str) -> Any:
-        """
-        Aplica o efeito de um Power-Up ao jogo.
-        """
+        """Aplica o efeito do Power-Up especificado."""
         if tipo not in self.power_ups or self.power_ups[tipo] <= 0:
             return {"erro": "Power-Up não disponível!"}
 
-        if tipo == "resposta_certa":
+        # Eliminar opções incorretas
+        if tipo == "eliminar":
             self.power_ups[tipo] -= 1
-            return {"resposta": self.pergunta_atual["resposta"]}
+            resposta_correta = self.pergunta_atual["resposta"]
+            opcoes = [resposta_correta]
 
+            while len(opcoes) < 4:
+                opcao = str(random.randint(-100, 100))
+                if opcao not in opcoes and opcao != resposta_correta:
+                    opcoes.append(opcao)
+            opcoes_erradas = [op for op in opcoes if op != resposta_correta][:2]
+            return {
+                "mensagem": "Duas opções incorretas foram eliminadas.",
+                "opcoes_restantes": [resposta_correta] + opcoes_erradas
+            }
+
+        # Tempo extra
         elif tipo == "tempo_extra":
             self.power_ups[tipo] -= 1
-            self.tempo_inicio -= 10  # Adiciona mais 10 segundos ao timer
-            return {"mensagem": "Mais 10 segundos adicionados!"}
+            tempo_extra = 10
+            if self.tempo_inicio is not None:
+                self.tempo_inicio += tempo_extra  # Corrigido para adicionar tempo corretamente
+            return {"mensagem": f"Tempo adicional de {tempo_extra}s foi concedido!"}
 
-        elif tipo == "eliminar":
+        # Resposta correta
+        elif tipo == "resposta_certa":
             self.power_ups[tipo] -= 1
-            return {"mensagem": "Opções incorretas removidas!"}
+            return {
+                "mensagem": "A resposta correta é exibida!",
+                "resposta": self.pergunta_atual["resposta"]
+            }
 
         return {"erro": "Tipo de Power-Up inválido!"}
 
     def reiniciar(self):
-        """
-        Reinicia o jogo.
-        """
+        """Reinicia o estado do jogo."""
         self.__init__()
 
 
@@ -194,7 +183,6 @@ def jogar():
     if jogo.fim_de_jogo:
         return redirect(url_for("fim"))
 
-    # Verificar tempo restante antes de gerar nova pergunta
     tempo_restante = jogo.calcular_tempo_restante()
     if tempo_restante <= 0:
         jogo.fim_de_jogo = True
@@ -202,9 +190,8 @@ def jogar():
 
     jogo.gerar_pergunta()
 
-    # Geração de opções múltiplas e embaralhamento
     resposta_correta = jogo.pergunta_atual["resposta"]
-    opcoes = [resposta_correta]  # Adiciona a resposta correta
+    opcoes = [resposta_correta]
     while len(opcoes) < 4:
         opcao = str(random.randint(-100, 100))
         if opcao not in opcoes:
@@ -218,7 +205,7 @@ def jogar():
         nivel=jogo.nivel,
         pontuacao=jogo.pontuacao,
         power_ups=jogo.power_ups,
-        tempo_restante=tempo_restante  # Envia o tempo restante para o HTML
+        tempo_restante=tempo_restante
     )
 
 
@@ -241,22 +228,17 @@ def responder():
 
 @app.route("/power_up/<tipo>", methods=["POST"])
 def power_up(tipo):
-    """
-    Rota para uso de Power-Up.
-    """
     resultado = jogo.usar_power_up(tipo)
-
-    if "erro" in resultado:  # Caso o Power-Up não esteja disponível
+    if "erro" in resultado:
         return render_template(
             "jogar.html",
             pergunta=jogo.pergunta_atual["pergunta"],
-            opcoes=[jogo.pergunta_atual["resposta"]],  # Garante que a resposta seja exibida
+            opcoes=[jogo.pergunta_atual["resposta"]],
             nivel=jogo.nivel,
             pontuacao=jogo.pontuacao,
             power_ups=jogo.power_ups,
             erro=resultado["erro"]
         )
-
     return redirect(url_for("jogar", mensagem=resultado.get("mensagem", "")))
 
 
@@ -282,11 +264,8 @@ def regras():
 
 @app.route("/reiniciar", methods=["POST"])
 def reiniciar():
-    """
-    Reinicia o estado do jogo.
-    """
-    jogo.reiniciar()  # Chama o método para reiniciar o jogo
-    return {"mensagem": "Jogo reiniciado com sucesso!"}, 200  # Retorna uma resposta JSON ao frontend
+    jogo.reiniciar()
+    return {"mensagem": "Jogo reiniciado com sucesso!"}, 200
 
 
 # ------------------------------

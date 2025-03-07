@@ -8,57 +8,67 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusContainer = document.querySelector(".status");
   const mensagemContainer = document.querySelector(".mensagem");
   const botaoTenteNovamente = document.querySelector("#botao-reiniciar");
-  const contadorElemento = document.getElementById("contador-tempo"); // Elemento do contador
+  const contadorElemento = document.getElementById("contador-tempo");
+  const botaoPowerUpTempoExtra = document.querySelector("#powerup-tempo-extra");
+
+  // Tempo inicial e configuração do temporizador
   let tempoRestante = contadorElemento
     ? parseInt(contadorElemento.dataset.tempo, 10)
-    : 30; // Tempo inicial vindo do dataset ou default
+    : 30;
 
-  // Atualiza o contador de tempo
+  // Função para atualizar o contador de tempo
   function atualizarContador() {
     if (tempoRestante > 0) {
-      contadorElemento.textContent = `Tempo restante: ${tempoRestante}s`;
+      contadorElemento.textContent = `⏳ Tempo restante: ${tempoRestante}s`;
 
       if (tempoRestante <= 5) {
-        // Altera a cor do contador quando há pouco tempo restante
         contadorElemento.classList.add("alerta");
       }
 
       tempoRestante--;
     } else {
-      contadorElemento.textContent = "Tempo esgotado!";
+      contadorElemento.textContent = "⏰ Tempo esgotado!";
       contadorElemento.classList.remove("alerta");
       contadorElemento.classList.add("esgotado");
 
-      // Para de atualizar o contador e redireciona para o fim do jogo
+      // Cancela o intervalo e redireciona para a página de fim de jogo
       clearInterval(intervaloContador);
-      window.location.href = "/fim"; // Redireciona automaticamente
+      window.location.href = "/fim";
     }
   }
 
-  // Configura intervalo do contador
+  // Configuração do intervalo do contador
   const intervaloContador = setInterval(atualizarContador, 1000);
 
-  // Função para carregar dinâmica do jogo (nova pergunta, pontuação e status)
+  // Função para carregar o estado do jogo
   function atualizarEstadoJogo() {
+    mensagemContainer.textContent = "🔄 Carregando próxima pergunta...";
+    mensagemContainer.classList.remove("sucesso", "erro", "aviso");
+    mensagemContainer.classList.add("aviso");
+
     fetch("/jogar", { method: "GET" })
       .then((res) => res.json())
       .then((data) => {
         if (data.fim_de_jogo) {
-          window.location.href = "/fim"; // Redireciona para a página final
+          window.location.href = "/fim";
           return;
         }
 
-        // Atualiza a UI com os dados do backend
+        // Atualiza os elementos do jogo com os novos dados
         perguntaContainer.textContent = data.pergunta_atual;
         statusContainer.innerHTML = `
           Pontuação: <span>${data.pontuacao}</span> |
           Nível: <span>${data.nivel}</span> |
           Perguntas Respondidas: <span>${data.perguntas_respondidas}</span>
         `;
-        respostaInput.value = ""; // Limpa o campo de resposta
-        mensagemContainer.textContent = ""; // Limpa mensagens anteriores
+        respostaInput.value = "";
+        mensagemContainer.textContent = "";
       })
-      .catch((err) => console.error("Erro ao atualizar estado do jogo:", err));
+      .catch((err) => {
+        console.error("Erro ao atualizar o estado do jogo:", err);
+        mensagemContainer.textContent = "⚠️ Erro ao carregar a próxima pergunta. Tente novamente!";
+        mensagemContainer.classList.add("erro");
+      });
   }
 
   // Processar resposta do jogador
@@ -72,44 +82,90 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Desabilita o botão enquanto processa a solicitação
+    enviarResposta.disabled = true;
+    mensagemContainer.textContent = "🔄 Verificando resposta...";
+    mensagemContainer.classList.remove("sucesso", "erro", "aviso");
+    mensagemContainer.classList.add("aviso");
+
     fetch("/responder", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ resposta: resposta }), // Envia a resposta ao backend
+      body: JSON.stringify({ resposta: resposta }),
     })
       .then((res) => res.json())
       .then((data) => {
-        // Exibe o feedback do backend
         mensagemContainer.textContent = data.mensagem;
         mensagemContainer.classList.remove("sucesso", "erro", "aviso");
         mensagemContainer.classList.add(data.correta ? "sucesso" : "erro");
 
-        // Atualiza estado do jogo após a resposta
-        atualizarEstadoJogo();
+        if (data.correta) {
+          atualizarEstadoJogo();
+        }
       })
-      .catch((err) => console.error("Erro ao enviar resposta:", err));
+      .catch((err) => {
+        console.error("Erro ao enviar resposta:", err);
+        mensagemContainer.textContent = "⚠️ Erro ao enviar resposta. Tente novamente!";
+        mensagemContainer.classList.add("erro");
+      })
+      .finally(() => {
+        enviarResposta.disabled = false;
+      });
   });
 
-  // Processar reinício do jogo quando o botão "Tente novamente" for clicado
+  // Reiniciar Jogo
   if (botaoTenteNovamente) {
     botaoTenteNovamente.addEventListener("click", () => {
-      fetch("/reiniciar", { method: "POST" }) // Faz a requisição ao backend
+      mensagemContainer.textContent = "🔄 Reiniciando o jogo...";
+      mensagemContainer.classList.remove("sucesso", "erro", "aviso");
+      mensagemContainer.classList.add("aviso");
+
+      fetch("/reiniciar", { method: "POST" })
         .then((res) => {
           if (res.ok) {
-            console.log("🔄 Jogo reiniciado!");
-            atualizarEstadoJogo(); // Atualiza a interface após reiniciar o jogo
+            atualizarEstadoJogo();
           } else {
-            console.error("❌ Erro ao tentar reiniciar o jogo.");
+            mensagemContainer.textContent = "⚠️ Não foi possível reiniciar o jogo!";
+            mensagemContainer.classList.add("erro");
           }
         })
-        .catch((err) => console.error("Erro ao reiniciar o jogo:", err));
+        .catch((err) => {
+          console.error("Erro ao reiniciar o jogo:", err);
+          mensagemContainer.textContent = "⚠️ Erro ao reiniciar o jogo.";
+          mensagemContainer.classList.add("erro");
+        });
     });
-  } else {
-    console.warn("⚠️ Botão 'Tente novamente' não encontrado na página.");
   }
 
-  // Inicializa o estado do jogo ao carregar a página
+  // Power-Up: Tempo Extra
+  if (botaoPowerUpTempoExtra) {
+    botaoPowerUpTempoExtra.addEventListener("click", () => {
+      mensagemContainer.textContent = "🔄 Ativando Power-Up: Tempo Extra...";
+      mensagemContainer.classList.remove("sucesso", "erro", "aviso");
+      mensagemContainer.classList.add("aviso");
+
+      fetch("/power_up/tempo_extra", { method: "POST" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.erro) {
+            mensagemContainer.textContent = `⚠️ ${data.erro}`;
+            mensagemContainer.classList.add("erro");
+          } else {
+            tempoRestante += 10; // Incrementa tempo no contador
+            mensagemContainer.textContent = data.mensagem;
+            mensagemContainer.classList.add("sucesso");
+          }
+        })
+        .catch((err) => {
+          console.error("Erro ao ativar Power-Up de Tempo Extra:", err);
+          mensagemContainer.textContent = "⚠️ Erro ao ativar Power-Up.";
+          mensagemContainer.classList.add("erro");
+        });
+    });
+  }
+
+  // Carregar o estado inicial do jogo
   atualizarEstadoJogo();
 });

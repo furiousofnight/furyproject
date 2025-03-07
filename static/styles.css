@@ -5,27 +5,22 @@
     box-sizing: border-box;
 }
 
+/* Configurações básicas */
 html {
-    font-size: 100%; /* Base para tamanhos proporcionais */
+    font-size: 100%;
 }
 
 body {
     background: linear-gradient(135deg, #141E30, #243B55);
     color: white;
     font-family: 'Arial', sans-serif;
-    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     text-align: center;
+    margin: 0;
     line-height: 1.6;
-}
-
-/* Transição animada na saída */
-body.saida {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
 }
 
 /* Contêiner principal */
@@ -33,199 +28,143 @@ body.saida {
     background: rgba(0, 0, 0, 0.85);
     border-radius: 15px;
     padding: 30px 40px;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
     text-align: center;
-    word-wrap: break-word; /* Impede estouro de texto longo */
-    overflow-wrap: anywhere; /* Ajuda em textos longos */
+    word-wrap: break-word;
 }
 
-/* Títulos */
+/* Cabeçalhos */
 h1 {
     font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
     color: #FFD700;
     text-shadow: 0 0 10px #FFD700, 0 0 20px #FFFFFF;
+    animation: pulse 2s infinite ease-in-out;
 }
 
 h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: #FFFFFF;
 }
 
 p {
     font-size: 1.2rem;
+    color: #FFFFFF;
     margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-/* Contador de Tempo */
-.contador-tempo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 15px 0;
-    color: #00FFAB; /* Cor verde inicial */
-    transition: color 0.3s ease-in-out;
-}
-
-.contador-tempo.alerta {
-    color: #FFD700; /* Amarelo ao aproximar do fim */
-    animation: pulse 1s infinite; /* Efeito de pulso para chamar a atenção */
-}
-
-.contador-tempo.esgotado {
-    color: #FF6363; /* Vermelho ao se esgotar */
-    animation: none; /* Remove animação quando tempo encerra */
-}
-
-/* Efeito de pulso */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Listas */
-ul, ol {
-    padding: 0;
-    list-style: none;
-    text-align: left;
-}
-
-li {
-    font-size: 1.2rem;
     line-height: 1.8;
-    margin-bottom: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    color: #00FFAB;
-    transition: all 0.3s ease-in-out;
 }
 
-li:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-/* Botões e botões de formulário */
+/* Botões */
 .botao-container {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap; /* Quebra de linha quando necessário */
-    gap: 10px; /* Espaço entre os botões */
-    margin-top: 10px;
+    flex-wrap: wrap; /* Ajuste para botões quebrarem linha */
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.botao, form button {
+.botao {
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 0.95rem; /* Tamanho da fonte ajustado */
-    font-weight: bold;
+    padding: 10px 25px;
+    font-size: 1rem;
     text-transform: uppercase;
-    text-decoration: none;
+    font-weight: bold;
     color: white;
     background: linear-gradient(135deg, #FF6363, #FFD700);
     border-radius: 25px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
-    border: none;
-    min-width: 120px; /* Garante uma largura mínima para os botões */
+    text-decoration: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.botao:hover, form button:hover {
-    transform: scale(1.08); /* Animação de hover */
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+.botao-principal {
+    background: linear-gradient(135deg, #7352FF, #E73C7E);
 }
 
-/* Botões desabilitados */
-.botao:disabled, form button:disabled {
-    background: grey;
-    color: white;
-    cursor: not-allowed;
-    opacity: 0.6;
-    transform: none;
-    box-shadow: none;
+.botao:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
 /* Inputs de formulário */
 form input {
-    margin: 10px auto;
-    width: calc(100% - 20px);
+    display: block;
+    margin: 15px auto;
     padding: 10px;
-    font-size: 1.1rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
+    width: calc(100% - 30px);
+    font-size: 1rem;
     color: white;
-    text-align: center;
-    border-radius: 10px;
+    background: rgba(36, 59, 85, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    transition: all 0.3s ease;
     outline: none;
-    transition: border 0.3s ease, background 0.3s ease;
 }
 
 form input:focus {
-    border: 1px solid #FFD700;
-    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
 
-/* Estilos específicos para mensagens de feedback */
-.mensagem {
-    margin-top: 20px;
-    font-size: 1.2rem;
+form input:hover {
+    border: 2px solid #00FFAB;
+}
+
+/* Botões do formulário */
+form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #00C9FF, #92FE9D);
+    transition: background 0.3s ease;
+}
+
+form button:hover {
+    background: linear-gradient(135deg, #92FE9D, #00C9FF);
+}
+
+/* Efeito de animação no título */
+@keyframes pulse {
+    0%, 100% {
+        text-shadow: 0 0 15px #FFD700, 0 0 25px #FFFFFF;
+    }
+    50% {
+        text-shadow: 0 0 25px #FFD700, 0 0 35px #FFFFFF;
+    }
+}
+
+/* Listas */
+ul {
+    padding: 0;
+    list-style: none;
+    margin: 20px 0;
+}
+
+li {
+    font-size: 1.1rem;
+    color: #00FFAB;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease-in-out;
 }
 
-.sucesso {
-    color: #00FFAB;
-    font-weight: bold;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.erro {
-    color: #FF6363;
-    font-weight: bold;
-    animation: shake 0.5s ease-in-out;
-}
-
-.aviso {
-    color: #FFD700;
-    font-weight: bold;
-}
-
-/* Classes reutilizáveis */
-.text-center {
-    text-align: center;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* Animações */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+li:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
 }
 
 /* Responsividade */
@@ -234,33 +173,31 @@ form input:focus {
         font-size: 2rem;
     }
 
-    p, li, form input, form button, .botao {
+    p {
         font-size: 1rem;
+    }
+
+    .botao {
+        font-size: 0.9rem;
+        padding: 8px 18px;
+    }
+
+    .form-ranking {
         padding: 10px;
-        min-width: 100px; /* Ajusta largura em dispositivos médios */
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    .botao-container {
-        gap: 8px;
     }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 
-    .botao, form button {
-        padding: 6px 10px; /* Mais compacto ainda */
+    .botao {
+        padding: 6px 12px;
         font-size: 0.85rem;
-        min-width: 80px; /* Ajusta para dispositivos menores */
     }
 
-    .botao-container {
-        gap: 5px; /* Espaço reduzido */
+    form input, form button {
+        font-size: 0.9rem;
     }
 }

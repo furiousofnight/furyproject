@@ -6,56 +6,75 @@
     <title>Jogar - Jogo Matemático</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        /* Estilo adicional para customização exclusiva */
-
-        /* Layout principal */
-        body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: all 0.3s ease-in-out;
-        }
-
+        /* Contêiner principal */
         .container {
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 18px;
-            padding: 40px 30px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(36, 37, 42, 0.9);
+            border-radius: 10px;
             text-align: center;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFD700, 0 0 20px #fff;
-        }
-
+        /* Contador de tempo */
         .contador-tempo {
             font-size: 1.5rem;
             font-weight: bold;
-            margin: 15px 0;
-            color: #ff4d4d;
+            margin: 10px 0 20px;
+            color: #00FFAB;
+            transition: color 0.2s ease;
         }
 
+        /* Alerta de tempo */
+        .contador-tempo.alerta {
+            color: #FFD700;
+            animation: pulse 1s infinite;
+        }
+
+        /* Efeito de pulso */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Mensagens de feedback */
+        .mensagem {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .mensagem.erro {
+            color: #FF6363;
+        }
+
+        .mensagem.sucesso {
+            color: #00FFAB;
+        }
+
+        /* Pergunta */
         .pergunta {
             font-size: 1.5rem;
-            margin: 20px 0;
-            color: #fff;
-            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
+        /* Status (nível e pontuação) */
         .status {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 20px;
-            font-size: 1.1rem;
-            color: #00FFAB;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+        }
+
+        .status p {
+            margin: 0;
         }
 
         .status span {
@@ -63,108 +82,91 @@
             color: #FFD700;
         }
 
+        /* Botões de respostas */
         .botoes-respostas {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .botao-resposta {
-            flex: 0 1 calc(45% - 10px); /* Cada botão ocupa 45% do espaço na linha */
-            padding: 15px 20px;
-            text-transform: uppercase;
-            border: none;
-            font-size: 1.1rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             font-weight: bold;
-            background: linear-gradient(135deg, #3A1C71, #D76D77);
-            color: white;
-            border-radius: 10px;
+            color: #fff;
+            background: #007BFF;
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s, background 0.3s;
         }
 
         .botao-resposta:hover {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #D76D77, #FFAF7B);
+            transform: scale(1.1);
+            background: #0056b3;
         }
 
-        /* Área de mensagens */
-        .mensagem {
-            margin: 20px 0;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .mensagem.erro {
-            background: #FF6363;
-            color: white;
-        }
-
-        .mensagem.sucesso {
-            background: #28a745;
-            color: white;
-        }
-
-        /* Seção de Power-Ups */
-        .power-ups {
-            margin-top: 20px;
-            text-align: center;
-        }
-
+        /* Power-ups */
         .power-ups h2 {
-            font-size: 1.5rem;
-            color: #FFD700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .power-ups button {
+        .power-ups .botao {
             display: inline-block;
             margin: 10px;
-            padding: 10px 15px;
-            font-size: 1rem;
+            padding: 12px 20px;
+            font-size: 0.9rem;
             font-weight: bold;
-            color: white;
+            color: #FFF;
+            background: linear-gradient(135deg, #FF6363, #FFB800);
             border: none;
-            border-radius: 10px;
+            border-radius: 30px;
             cursor: pointer;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #00C9FF, #92FE9D);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .power-ups button:hover {
+        .power-ups .botao:hover {
             transform: scale(1.1);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
         }
 
         .power-ups button:disabled {
-            background: gray;
+            background: grey;
             cursor: not-allowed;
-            box-shadow: none;
+            opacity: 0.5;
         }
 
-        /* Botão de voltar */
+        /* Botão voltar */
         .botao-voltar {
             display: inline-block;
-            margin-top: 30px;
-            padding: 12px 25px;
-            color: white;
-            text-transform: uppercase;
-            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #00FFAB;
             text-decoration: none;
-            border-radius: 50px;
-            transition: all 0.3s ease-in-out;
-            background: linear-gradient(135deg, #FF6363, #FFD700);
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            transition: transform 0.3s, color 0.3s;
         }
 
         .botao-voltar:hover {
             transform: scale(1.1);
-            text-shadow: 0 0 5px white;
+            color: #fff;
+            background: #00FFAB;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .botoes-respostas button {
+                flex-basis: 45%;
+            }
+
+            .status {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -174,9 +176,11 @@
         <h1>🎯 Responda a Pergunta!</h1>
 
         <!-- Contador de tempo -->
-        <div id="contador-tempo" class="contador-tempo">Tempo restante: {{ tempo_restante }}s</div>
+        <div id="contador-tempo" class="contador-tempo {% if tempo_restante < 10 %}alerta{% endif %}">
+            Tempo restante: {{ tempo_restante }}s
+        </div>
 
-        <!-- Mensagem de erro ou sucesso -->
+        <!-- Mensagem -->
         {% if erro %}
         <div class="mensagem erro">
             {{ erro }}
@@ -187,24 +191,19 @@
         </div>
         {% endif %}
 
-        <!-- Exibição da pergunta -->
+        <!-- Pergunta -->
         <p class="pergunta">{{ pergunta }}</p>
 
-        <!-- Informações de nível e pontuação -->
+        <!-- Status -->
         <div class="status">
             <p>Nível: <span>{{ nivel }}</span></p>
-            <p>Pontuação: <span>{{ pontuacao }}</span></p>
+            <p>Pontuação: <span>{{pontuacao}}</span></p>
         </div>
 
-        <!-- Formulário com as opções de resposta -->
+        <!-- Botões de Respostas -->
         <form action="{{ url_for('responder') }}" method="post" class="botoes-respostas">
             {% for opcao in opcoes %}
-            <button
-                type="submit"
-                name="resposta"
-                value="{{ opcao }}"
-                class="botao-resposta"
-            >
+            <button type="submit" name="resposta" value="{{ opcao }}" class="botao-resposta">
                 {{ opcao }}
             </button>
             {% endfor %}
@@ -213,41 +212,65 @@
         <!-- Power-Ups -->
         <div class="power-ups">
             <h2>💡 Power-Ups</h2>
+
+            <!-- Eliminar -->
+            {% if power_ups.eliminar > 0 %}
             <form action="{{ url_for('power_up', tipo='eliminar') }}" method="post">
-                <button type="submit" class="botao">
+                <button class="botao" type="submit">
                     ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
                 </button>
             </form>
+            {% else %}
+            <button class="botao" disabled>
+                ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
+            </button>
+            {% endif %}
+
+            <!-- Mais Tempo -->
+            {% if power_ups.tempo_extra > 0 %}
             <form action="{{ url_for('power_up', tipo='tempo_extra') }}" method="post">
-                <button type="submit" class="botao">
-                    ⏳ Mais Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+                <button class="botao" type="submit">
+                    ⏳ Adicionar Tempo <br> ({{ power_ups.tempo_extra }} restantes)
                 </button>
             </form>
+            {% else %}
+            <button class="botao" disabled>
+                ⏳ Adicionar Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+            </button>
+            {% endif %}
+
+            <!-- Resposta Correta -->
+            {% if power_ups.resposta_certa > 0 %}
             <form action="{{ url_for('power_up', tipo='resposta_certa') }}" method="post">
-                <button type="submit" class="botao">
-                    ✔️ Resposta Certa <br> ({{ power_ups.resposta_certa }} restantes)
+                <button class="botao" type="submit">
+                    ✔️ Resposta Certa <br> ({{power_ups.resposta_certa}} restante)
                 </button>
             </form>
+            {% else %}
+            <button class="botao" disabled>
+                ✔️ Resposta Certa <br> ({{power_ups.resposta_certa}} restantes)
+            </button>
+            {% endif %}
         </div>
 
-        <!-- Botão de voltar -->
+        <!-- Voltar -->
         <a href="{{ url_for('index') }}" class="botao-voltar">Voltar ao início</a>
     </div>
 
-    <!-- Script para o contador de tempo -->
     <script>
-        let tempoRestante = {{ tempo_restante }}; // Tempo restante vindo do backend
+        let tempoRestante = {{ tempo_restante }};
         const contadorElemento = document.getElementById('contador-tempo');
 
         function atualizarContador() {
             if (tempoRestante > 0) {
                 contadorElemento.textContent = `Tempo restante: ${tempoRestante}s`;
+                if (tempoRestante < 10 && !contadorElemento.classList.contains('alerta')) {
+                    contadorElemento.classList.add('alerta');
+                }
                 tempoRestante--;
             } else {
                 contadorElemento.textContent = "Tempo esgotado!";
                 clearInterval(intervaloContador);
-
-                // Redireciona automaticamente para a tela de fim
                 window.location.href = "{{ url_for('fim') }}";
             }
         }

@@ -33,6 +33,7 @@
             border-radius: 15px;
             padding: 40px 30px;
             max-width: 500px;
+            width: 90%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
         }
 
@@ -62,7 +63,40 @@
             color: #FFD700;
         }
 
+        /* Estilo do input */
+        form input {
+            margin: 20px 0;
+            width: calc(100% - 20px);
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(36, 59, 85, 0.9);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            outline: none;
+            transition: border 0.3s ease, background 0.3s ease;
+        }
+
+        form input:focus {
+            border: 2px solid #FFD700;
+            background: rgba(36, 59, 85, 1);
+            color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        form input:hover {
+            border: 1px solid #00FFAB;
+        }
+
         /* Botões */
+        .botao-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
         .botao {
             display: inline-block;
             margin: 10px 5px;
@@ -99,6 +133,11 @@
                 font-size: 1rem;
             }
 
+            form input {
+                font-size: 1rem;
+                padding: 10px;
+            }
+
             .botao {
                 font-size: 0.9rem;
                 padding: 12px 18px;
@@ -113,6 +152,11 @@
         <p>A resposta certa era: <b>{{resposta_certa }}</b></p>
         <p>🌟 A sua pontuação atual é: <b>{{pontuacao}}</b></p>
         <p>Nível Atual: <b>{{ nivel }}</b></p>
+
+        <!-- Input de resposta (ajustado) -->
+        <form action="{{ url_for('responder') }}" method="POST">
+            <input type="text" name="resposta" placeholder="Digite sua resposta aqui" required>
+        </form>
 
         <!-- Botões de navegação -->
         <div class="botao-container">
