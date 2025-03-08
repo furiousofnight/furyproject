@@ -63,6 +63,7 @@ class Jogo:
         if operador == "/":
             resposta_correta = round(resposta_correta, 1)
 
+        # Garante que o dicionário está correto
         self.pergunta_atual = {
             "pergunta": f"Quanto é {n1} {operador} {n2}?",
             "resposta": str(resposta_correta),
@@ -72,6 +73,11 @@ class Jogo:
     def verificar_resposta(self, resposta: str) -> bool:
         """Verifica se a resposta está correta e atualiza o estado do jogo."""
         if self.calcular_tempo_restante() <= 0:
+            self.fim_de_jogo = True
+            return False
+
+        # Adiciona verificação da chave "resposta" para evitar falhas
+        if "resposta" not in self.pergunta_atual:
             self.fim_de_jogo = True
             return False
 
@@ -128,7 +134,7 @@ class Jogo:
         # Eliminar opções incorretas
         if tipo == "eliminar":
             self.power_ups[tipo] -= 1
-            resposta_correta = self.pergunta_atual["resposta"]
+            resposta_correta = self.pergunta_atual.get("resposta", "")
             opcoes = [resposta_correta]
 
             while len(opcoes) < 4:
@@ -146,7 +152,7 @@ class Jogo:
             self.power_ups[tipo] -= 1
             tempo_extra = 10
             if self.tempo_inicio is not None:
-                self.tempo_inicio += tempo_extra  # Corrigido para adicionar tempo corretamente
+                self.tempo_inicio += tempo_extra  # Adiciona tempo extra
             return {"mensagem": f"Tempo adicional de {tempo_extra}s foi concedido!"}
 
         # Resposta correta
@@ -154,7 +160,7 @@ class Jogo:
             self.power_ups[tipo] -= 1
             return {
                 "mensagem": "A resposta correta é exibida!",
-                "resposta": self.pergunta_atual["resposta"]
+                "resposta": self.pergunta_atual.get("resposta", "Desconhecida")
             }
 
         return {"erro": "Tipo de Power-Up inválido!"}
@@ -190,7 +196,7 @@ def jogar():
 
     jogo.gerar_pergunta()
 
-    resposta_correta = jogo.pergunta_atual["resposta"]
+    resposta_correta = jogo.pergunta_atual.get("resposta", "0")
     opcoes = [resposta_correta]
     while len(opcoes) < 4:
         opcao = str(random.randint(-100, 100))
@@ -200,7 +206,7 @@ def jogar():
 
     return render_template(
         "jogar.html",
-        pergunta=jogo.pergunta_atual["pergunta"],
+        pergunta=jogo.pergunta_atual.get("pergunta", "Erro ao gerar pergunta."),
         opcoes=opcoes,
         nivel=jogo.nivel,
         pontuacao=jogo.pontuacao,
@@ -220,7 +226,7 @@ def responder():
     return render_template(
         "responder.html",
         correta=acertou,
-        resposta_certa=jogo.pergunta_atual["resposta"],
+        resposta_certa=jogo.pergunta_atual.get("resposta", "Desconhecida"),
         pontuacao=jogo.pontuacao,
         nivel=jogo.nivel,
     )
@@ -232,8 +238,8 @@ def power_up(tipo):
     if "erro" in resultado:
         return render_template(
             "jogar.html",
-            pergunta=jogo.pergunta_atual["pergunta"],
-            opcoes=[jogo.pergunta_atual["resposta"]],
+            pergunta=jogo.pergunta_atual.get("pergunta", "Erro!"),
+            opcoes=[jogo.pergunta_atual.get("resposta", "0")],
             nivel=jogo.nivel,
             pontuacao=jogo.pontuacao,
             power_ups=jogo.power_ups,

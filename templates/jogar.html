@@ -192,7 +192,7 @@
         {% endif %}
 
         <!-- Pergunta -->
-        <p class="pergunta">{{ pergunta }}</p>
+        <p class="pergunta">{{ pergunta or 'Erro ao carregar a pergunta.' }}</p>
 
         <!-- Status -->
         <div class="status">
@@ -214,41 +214,41 @@
             <h2>💡 Power-Ups</h2>
 
             <!-- Eliminar -->
-            {% if power_ups.eliminar > 0 %}
+            {% if power_ups.get('eliminar', 0) > 0 %}
             <form action="{{ url_for('power_up', tipo='eliminar') }}" method="post">
                 <button class="botao" type="submit">
-                    ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
+                    ✂️ Eliminar Respostas <br> ({{ power_ups.get('eliminar') }} restantes)
                 </button>
             </form>
             {% else %}
             <button class="botao" disabled>
-                ✂️ Eliminar Respostas <br> ({{ power_ups.eliminar }} restantes)
+                ✂️ Eliminar Respostas <br> ({{ power_ups.get('eliminar') }} restantes)
             </button>
             {% endif %}
 
             <!-- Mais Tempo -->
-            {% if power_ups.tempo_extra > 0 %}
+            {% if power_ups.get('tempo_extra', 0) > 0 %}
             <form action="{{ url_for('power_up', tipo='tempo_extra') }}" method="post">
                 <button class="botao" type="submit">
-                    ⏳ Adicionar Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+                    ⏳ Adicionar Tempo <br> ({{ power_ups.get('tempo_extra') }} restantes)
                 </button>
             </form>
             {% else %}
             <button class="botao" disabled>
-                ⏳ Adicionar Tempo <br> ({{ power_ups.tempo_extra }} restantes)
+                ⏳ Adicionar Tempo <br> ({{ power_ups.get('tempo_extra') }} restantes)
             </button>
             {% endif %}
 
             <!-- Resposta Correta -->
-            {% if power_ups.resposta_certa > 0 %}
+            {% if power_ups.get('resposta_certa', 0) > 0 %}
             <form action="{{ url_for('power_up', tipo='resposta_certa') }}" method="post">
                 <button class="botao" type="submit">
-                    ✔️ Resposta Certa <br> ({{power_ups.resposta_certa}} restante)
+                    ✔️ Resposta Certa <br> ({{ power_ups.get('resposta_certa') }} restante)
                 </button>
             </form>
             {% else %}
             <button class="botao" disabled>
-                ✔️ Resposta Certa <br> ({{power_ups.resposta_certa}} restantes)
+                ✔️ Resposta Certa <br> ({{ power_ups.get('resposta_certa') }} restantes)
             </button>
             {% endif %}
         </div>
@@ -261,21 +261,24 @@
         let tempoRestante = {{ tempo_restante }};
         const contadorElemento = document.getElementById('contador-tempo');
 
-        function atualizarContador() {
-            if (tempoRestante > 0) {
-                contadorElemento.textContent = `Tempo restante: ${tempoRestante}s`;
-                if (tempoRestante < 10 && !contadorElemento.classList.contains('alerta')) {
-                    contadorElemento.classList.add('alerta');
+        if (!isNaN(tempoRestante)) {
+            function atualizarContador() {
+                if (tempoRestante > 0) {
+                    contadorElemento.textContent = `Tempo restante: ${tempoRestante}s`;
+                    if (tempoRestante < 10 && !contadorElemento.classList.contains('alerta')) {
+                        contadorElemento.classList.add('alerta');
+                    }
+                    tempoRestante--;
+                } else {
+                    contadorElemento.textContent = "Tempo esgotado!";
+                    clearInterval(intervaloContador);
+                    window.location.href = "{{ url_for('fim') }}";
                 }
-                tempoRestante--;
-            } else {
-                contadorElemento.textContent = "Tempo esgotado!";
-                clearInterval(intervaloContador);
-                window.location.href = "{{ url_for('fim') }}";
             }
+            const intervaloContador = setInterval(atualizarContador, 1000);
+        } else {
+            contadorElemento.textContent = "Erro ao calcular tempo!";
         }
-
-        const intervaloContador = setInterval(atualizarContador, 1000);
     </script>
 </body>
 </html>

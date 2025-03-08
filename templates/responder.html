@@ -63,9 +63,13 @@
             color: #FFD700;
         }
 
-        /* Estilo do input */
-        form input {
+        /* Estilo do formulário */
+        form {
             margin: 20px 0;
+        }
+
+        form input {
+            margin: 10px 0;
             width: calc(100% - 20px);
             padding: 12px;
             font-size: 1.1rem;
@@ -89,18 +93,36 @@
             border: 1px solid #00FFAB;
         }
 
+        form button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FFF;
+            background: linear-gradient(135deg, #00FFAB, #007AFF);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s ease all;
+        }
+
+        form button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         /* Botões */
         .botao-container {
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
             gap: 15px;
+            margin-top: 20px;
         }
 
         .botao {
             display: inline-block;
-            margin: 10px 5px;
-            padding: 15px 20px;
+            padding: 12px 20px;
             text-decoration: none;
             font-size: 1rem;
             font-weight: bold;
@@ -123,7 +145,6 @@
             background: linear-gradient(135deg, #FFD700, #FF6363);
         }
 
-        /* Responsividade */
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8rem;
@@ -134,31 +155,35 @@
             }
 
             form input {
-                font-size: 1rem;
                 padding: 10px;
+                font-size: 1rem;
             }
 
             .botao {
                 font-size: 0.9rem;
-                padding: 12px 18px;
+                padding: 10px 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Exibição do resultado -->
-        <h1>{{ "✅ Resposta Correta!" if correta else "❌ Resposta Errada!" }}</h1>
+        <!-- Título do Resultado -->
+        <h1>
+            {{ "✅ Resposta Correta!" if correta else "❌ Resposta Errada!" }}
+        </h1>
+
         <p>A resposta certa era: <b>{{resposta_certa }}</b></p>
-        <p>🌟 A sua pontuação atual é: <b>{{pontuacao}}</b></p>
+        <p>🌟 Pontuação Atual: <b>{{pontuacao }}</b></p>
         <p>Nível Atual: <b>{{ nivel }}</b></p>
 
-        <!-- Input de resposta (ajustado) -->
+        <!-- Input manual de nova resposta -->
         <form action="{{ url_for('responder') }}" method="POST">
-            <input type="text" name="resposta" placeholder="Digite sua resposta aqui" required>
+            <input type="text" name="resposta" placeholder="Insira sua resposta aqui" required>
+            <button type="submit">Enviar Resposta</button>
         </form>
 
-        <!-- Botões de navegação -->
+        <!-- Opções de navegação -->
         <div class="botao-container">
             <a href="{{ url_for('jogar') }}" class="botao botao-principal">Próxima Pergunta</a>
             <a href="{{ url_for('index') }}" class="botao">Voltar ao Início</a>

@@ -33,6 +33,7 @@
             border-radius: 15px;
             padding: 30px;
             max-width: 600px;
+            width: 90%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
         }
 
@@ -42,6 +43,14 @@
             margin-bottom: 20px;
             text-shadow: 0 0 10px #FFD700, 0 0 20px #FF7300;
             color: #FFD700;
+        }
+
+        /* Destaque do primeiro lugar */
+        .primeiro {
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700, #FFA700);
+            color: #000;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
         }
 
         /* Lista ordenada */
@@ -60,13 +69,20 @@
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.1);
             color: #FFD700;
+            transition: all 0.3s ease;
         }
 
         ol li:hover {
             background: rgba(255, 255, 255, 0.2);
             color: #FFF;
             border-color: #FFD700;
-            transition: all 0.3s ease;
+        }
+
+        /* Mensagem em caso de ranking vazio */
+        .ranking-vazio {
+            font-size: 1.3rem;
+            color: #FFD700;
+            margin: 20px 0;
         }
 
         /* Botões */
@@ -115,11 +131,18 @@
         <h1>🏅 Ranking dos Melhores Jogadores 🏅</h1>
 
         <!-- Lista dinâmica com Flask -->
-        <ol>
-            {% for player in ranking %}
-                <li>{{ player.nome }} - {{ player.pontuacao }} pontos</li>
-            {% endfor %}
-        </ol>
+        {% if ranking %}
+            <ol>
+                {% for player in ranking %}
+                    <!-- Destaque especial para o primeiro lugar -->
+                    <li class="{% if loop.index == 1 %}primeiro{% endif %}">
+                        {{ player.nome }} - {{ player.pontuacao }} pontos
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p class="ranking-vazio">Nenhum jogador no ‘ranking’ ainda. Seja o primeiro a se destacar!</p>
+        {% endif %}
 
         <!-- Botão para voltar ao início -->
         <div class="botao-container">
